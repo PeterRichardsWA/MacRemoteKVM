@@ -11,6 +11,8 @@ experiments/**/ReceiverDecodeRenderProbe
 !experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe
 experiments/**/ReceiverHEVCDecodeRenderProbe
 !experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe
+experiments/**/ReceiverDecodeEnvelopeProbe
+!experiments/008-receiver-decode-envelope/ReceiverDecodeEnvelopeProbe
 experiments/**/*.dSYM/
 
 # Temporary outputs

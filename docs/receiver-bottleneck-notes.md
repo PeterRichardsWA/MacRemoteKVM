@@ -106,6 +106,16 @@ That means neither 5K60 H.264 nor 5K60 HEVC is viable as the first receiver
 transport path on this iMac Pro. The next receiver test should map the practical
 hardware decode envelope by lowering resolution and/or frame rate.
 
+Experiment 008 packages that envelope test:
+
+```sh
+cd experiments/008-receiver-decode-envelope
+./run_decode_envelope_probe.sh
+```
+
+It tests HEVC/H.265 at 5K30, 4096x2304@60, 3840x2160@60, 3200x1800@60, and
+2560x1440@60, plus H.264 fallback points at 3840x2160@60 and 2560x1440@60.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

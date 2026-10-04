@@ -686,12 +686,14 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
         [report appendFormat:@"The required hardware %@ decoder session could not be created for this 5K stream. %@ should not be treated as viable for the first 5K transport path until this is explained or a different stream shape is tested.\n",
          codecName,
          codecName];
-    } else if (throughputFPS >= 60.0 && self.renderFailures == 0 && self.decodeOutputErrors == 0 && self.decodeCallErrors == 0) {
-        [report appendFormat:@"This machine sustained at least 60 rendered FPS for the local 5K %@ decode/render path. %@ remains viable for the first receiver transport prototype.\n",
+    } else if (throughputFPS >= nominalFPS && self.renderFailures == 0 && self.decodeOutputErrors == 0 && self.decodeCallErrors == 0) {
+        [report appendFormat:@"This machine sustained at least %.2f rendered FPS for the local %@ decode/render path. %@ remains viable for this receiver envelope point.\n",
+         nominalFPS,
          codecName,
          codecName];
     } else {
-        [report appendFormat:@"This machine did not sustain 60 rendered FPS in this local 5K %@ decode/render probe. Compare against other candidate codecs before choosing the first transport codec.\n",
+        [report appendFormat:@"This machine did not sustain %.2f rendered FPS in this local %@ decode/render probe. Compare against other receiver envelope points before choosing the first transport codec.\n",
+         nominalFPS,
          codecName];
     }
 

@@ -125,6 +125,18 @@ VideoToolbox HEVC/H.265 decoder for the checked-in 5120x2880/60 fps test stream,
 renders decoded frames through Metal/Core Image, and writes a report to
 `results/007-receiver-hevc-decode-render/hevc-decode-render-result.md`.
 
+Run the receiver decode envelope ladder:
+
+```sh
+cd 008-receiver-decode-envelope
+./run_decode_envelope_probe.sh
+```
+
+Expected result: the probe runs several HEVC/H.265 and H.264 fixtures at lower
+resolutions and/or frame rates, requires a hardware VideoToolbox decoder for
+each, renders decoded frames through Metal/Core Image, and writes reports plus a
+summary to `results/008-receiver-decode-envelope/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

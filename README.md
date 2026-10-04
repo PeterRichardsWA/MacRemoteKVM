@@ -86,6 +86,18 @@ experiments/
     run_hevc_decode_render_probe.sh
     media/
       hevc-5k60-main-3s.mp4
+  008-receiver-decode-envelope/
+    ReceiverDecodeEnvelopeProbe
+    ReceiverDecodeEnvelopeProbe.m
+    run_decode_envelope_probe.sh
+    media/
+      hevc-5120x2880-30-main-3s.mp4
+      hevc-4096x2304-60-main-3s.mp4
+      hevc-3840x2160-60-main-3s.mp4
+      hevc-3200x1800-60-main-3s.mp4
+      hevc-2560x1440-60-main-3s.mp4
+      h264-3840x2160-60-high-3s.mp4
+      h264-2560x1440-60-high-3s.mp4
 
 results/
   002-screencapturekit-capture/
@@ -100,6 +112,8 @@ results/
     h264-decode-render-result.md
   007-receiver-hevc-decode-render/
     hevc-decode-render-result.md
+  008-receiver-decode-envelope/
+    decode-envelope-summary.md
 ```
 
 ## Build Probes
@@ -168,6 +182,13 @@ HEVC receiver decode/render baseline:
 ```sh
 cd experiments/007-receiver-hevc-decode-render
 ./run_hevc_decode_render_probe.sh
+```
+
+Receiver decode envelope ladder:
+
+```sh
+cd experiments/008-receiver-decode-envelope
+./run_decode_envelope_probe.sh
 ```
 
 ## Distribution Assumption

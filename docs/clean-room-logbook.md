@@ -34,6 +34,7 @@ engineering RetinaRelay or any other proprietary product.
 | 2026-10-04 | Intel HEVC/H.265 hardware support note | Public hardware context for older Intel receiver Macs. |
 | 2026-10-04 | FFmpeg/libx264 test pattern generation | Synthetic H.264 5K60 fixture generation only; no implementation code copied. |
 | 2026-10-04 | FFmpeg/libx265 test pattern generation | Synthetic HEVC/H.265 5K60 fixture generation only; no implementation code copied. |
+| 2026-10-04 | FFmpeg/libx264 and libx265 test pattern generation | Synthetic decode-envelope fixtures only; no implementation code copied. |
 
 ## Architecture Note: Receiver Bottleneck
 
@@ -540,9 +541,58 @@ Artifacts:
 - `experiments/007-receiver-hevc-decode-render/media/hevc-5k60-main-3s.mp4`
 - `results/007-receiver-hevc-decode-render/hevc-decode-render-result.md`
 
+## Experiment 008: Receiver Decode Envelope Ladder
+
+Date: 2026-10-04
+
+Question: Since 5120x2880 at 60 fps failed for both H.264 and HEVC on the target
+iMac Pro, what lower resolution and frame-rate points can create a
+required-hardware VideoToolbox decoder session and render successfully?
+
+Implementation:
+
+- Generated synthetic `testsrc2` MP4 fixtures:
+  - HEVC/H.265 5120x2880 at 30 fps.
+  - HEVC/H.265 4096x2304 at 60 fps.
+  - HEVC/H.265 3840x2160 at 60 fps.
+  - HEVC/H.265 3200x1800 at 60 fps.
+  - HEVC/H.265 2560x1440 at 60 fps.
+  - H.264 3840x2160 at 60 fps.
+  - H.264 2560x1440 at 60 fps.
+- Added `experiments/008-receiver-decode-envelope/ReceiverDecodeEnvelopeProbe.m`
+  as a self-contained wrapper source with Experiment 008 defaults.
+- Reused the native Apple API benchmark harness from Experiment 006.
+- Added `run_decode_envelope_probe.sh` to run each fixture and create
+  `results/008-receiver-decode-envelope/decode-envelope-summary.md`.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x264/x265 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./run_decode_envelope_probe.sh
+```
+
+Local smoke result:
+
+```text
+All seven ladder points created required-hardware decoder sessions on the M1 Max
+development Mac. Each rendered all frames with no decode output errors or render
+failures.
+```
+
+Conclusion: The ladder package works locally. The decisive result must come from
+the target iMac Pro Viewer.
+
+Artifacts:
+
+- `experiments/008-receiver-decode-envelope/ReceiverDecodeEnvelopeProbe`
+- `experiments/008-receiver-decode-envelope/ReceiverDecodeEnvelopeProbe.m`
+- `experiments/008-receiver-decode-envelope/run_decode_envelope_probe.sh`
+- `experiments/008-receiver-decode-envelope/media/`
+- `results/008-receiver-decode-envelope/`
+
 ## Next Experiment
 
-Experiment 008 should run a receiver decode/render ladder to find the iMac Pro's
-hardware-decode boundary. Candidate fixtures should include HEVC 5120x2880 at
-30 fps, HEVC 4096x2304 at 60 fps, HEVC 3840x2160 at 60 fps, and matching H.264
-fallback points where useful.
+Run Experiment 008 on the target iMac Pro Viewer and identify the highest
+passing hardware-decode point.

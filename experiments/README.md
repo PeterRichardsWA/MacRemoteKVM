@@ -69,6 +69,27 @@ window on it, starts an `SCStream`, receives live IOSurface-backed 5120x2880
 frames, and writes a Markdown/CSV report to
 `results/003-live-screencapturekit-stream/stream-probe-result.md`.
 
+Build the local HEVC encode probe:
+
+```sh
+cd 004-videotoolbox-hevc-encode
+clang -fobjc-arc -framework AppKit -framework Foundation \
+  -framework CoreGraphics -framework CoreMedia -framework CoreVideo \
+  -framework IOSurface -framework ScreenCaptureKit -framework VideoToolbox \
+  VirtualDisplayHEVCEncodeProbe.m -o VirtualDisplayHEVCEncodeProbe
+```
+
+Run the local HEVC encode test:
+
+```sh
+./VirtualDisplayHEVCEncodeProbe
+```
+
+Expected result: the probe creates a virtual 5K display, streams live frames,
+submits 5120x2880 IOSurface-backed buffers into VideoToolbox HEVC, and writes a
+Markdown/CSV report to
+`results/004-videotoolbox-hevc-encode/hevc-encode-result.md`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

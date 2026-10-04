@@ -4,7 +4,7 @@ Software-only macOS remote display/KVM feasibility project.
 
 ## Current Status
 
-The first three technical gates have passed:
+The first four technical gates have passed:
 
 1. macOS accepted a software-only virtual 5K display with no physical monitor,
    dummy adapter, or custom hardware.
@@ -12,11 +12,13 @@ The first three technical gates have passed:
    5120x2880 frame from it.
 3. A live ScreenCaptureKit stream delivered IOSurface-backed 5120x2880 frames
    from an animated virtual display.
+4. Live 5120x2880 frames were accepted by a local VideoToolbox HEVC encoder
+   with zero encode errors or dropped frames in the short probe.
 
-The next technical gate is encode/render:
+The next technical gate is performance/latency:
 
-1. Feed `SCStream` frames into a local low-latency encoder or renderer.
-2. Measure CPU/GPU cost and end-to-end frame latency.
+1. Measure latency and CPU/GPU cost for HEVC encode/decode.
+2. Compare HEVC against direct local Metal rendering and later custom codecs.
 3. Try a local receiver path before adding network transport.
 
 ## Clean-Room Record
@@ -59,12 +61,16 @@ experiments/
     VirtualDisplayCaptureProbe.m
   003-live-screencapturekit-stream/
     VirtualDisplayStreamProbe.m
+  004-videotoolbox-hevc-encode/
+    VirtualDisplayHEVCEncodeProbe.m
 
 results/
   002-screencapturekit-capture/
     virtual-display-capture-probe.png
   003-live-screencapturekit-stream/
     stream-probe-result.md
+  004-videotoolbox-hevc-encode/
+    hevc-encode-result.md
 ```
 
 ## Build Probes
@@ -100,6 +106,18 @@ clang -fobjc-arc -framework AppKit -framework Foundation \
   VirtualDisplayStreamProbe.m -o VirtualDisplayStreamProbe
 ./VirtualDisplayStreamProbe \
   --output=/Users/peterrichards/dev/MacRemoteKVM/results/003-live-screencapturekit-stream/stream-probe-result.md
+```
+
+Local HEVC encode:
+
+```sh
+cd experiments/004-videotoolbox-hevc-encode
+clang -fobjc-arc -framework AppKit -framework Foundation \
+  -framework CoreGraphics -framework CoreMedia -framework CoreVideo \
+  -framework IOSurface -framework ScreenCaptureKit -framework VideoToolbox \
+  VirtualDisplayHEVCEncodeProbe.m -o VirtualDisplayHEVCEncodeProbe
+./VirtualDisplayHEVCEncodeProbe \
+  --output=/Users/peterrichards/dev/MacRemoteKVM/results/004-videotoolbox-hevc-encode/hevc-encode-result.md
 ```
 
 ## Distribution Assumption

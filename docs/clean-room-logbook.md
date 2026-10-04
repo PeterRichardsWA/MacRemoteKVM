@@ -210,12 +210,86 @@ Artifacts:
 - `experiments/003-live-screencapturekit-stream/VirtualDisplayStreamProbe.m`
 - `results/003-live-screencapturekit-stream/stream-probe-result.md`
 
+## Experiment 004: Encode Live Virtual 5K Frames With VideoToolbox HEVC
+
+Date: 2026-10-03
+
+Question: Can live 5120x2880 frames from the software-only virtual display be
+accepted by a local VideoToolbox HEVC encoder without network transport?
+
+Implementation:
+
+- Wrote `experiments/004-videotoolbox-hevc-encode/VirtualDisplayHEVCEncodeProbe.m`.
+- Created the virtual display independently.
+- Opened a borderless animated AppKit window on the virtual display to force
+  changing input frames.
+- Used `SCStream` to capture 5120x2880 BGRA frames.
+- Submitted complete IOSurface-backed frames into a VideoToolbox HEVC
+  compression session configured for realtime, low-latency operation.
+- Logged encode calls, output callbacks, encoded bytes, dropped-frame flags,
+  keyframes, and rough encode cadence.
+- No proprietary binaries or protocols inspected.
+
+Build command:
+
+```sh
+clang -fobjc-arc -framework AppKit -framework Foundation \
+  -framework CoreGraphics -framework CoreMedia -framework CoreVideo \
+  -framework IOSurface -framework ScreenCaptureKit -framework VideoToolbox \
+  VirtualDisplayHEVCEncodeProbe.m -o VirtualDisplayHEVCEncodeProbe
+```
+
+Run command:
+
+```sh
+./VirtualDisplayHEVCEncodeProbe --seconds=8 --frames=180 --bitrate-mbps=120 \
+  --output=/Users/peterrichards/dev/MacRemoteKVM/results/004-videotoolbox-hevc-encode/hevc-encode-result.md
+```
+
+Probe result:
+
+```text
+Codec: HEVC
+Expected frame size: 5120x2880
+Target bitrate: 120 Mbps
+Encoder setup: low-latency create status: 0; prepare status: 0
+Complete input frames: 180
+Submitted to encoder: 180
+Encode call errors: 0
+Encode call dropped flags: 0
+Encoder output callbacks: 180
+Encoded frames: 180
+Output errors: 0
+Output dropped frames: 0
+Key frames: 3
+Total encoded bytes: 9098993
+Observed submit FPS: 28.07
+Observed encoded FPS: 27.87
+Observed encoded bitrate: 11.33 Mbps
+Raw-to-encoded ratio: 1166.81:1
+Saw IOSurface-backed input buffers: yes
+All input dimensions matched expected: yes
+Stream error: none
+```
+
+Conclusion: Passed functionally. VideoToolbox HEVC accepted and encoded all 180
+live 5120x2880 frames with no encode errors and no dropped-frame flags.
+
+Performance note: This probe encoded at roughly 28 FPS, not 60 FPS. HEVC is a
+valid baseline path, but this result does not yet prove HEVC can meet the 5K60
+target.
+
+Artifacts:
+
+- `experiments/004-videotoolbox-hevc-encode/VirtualDisplayHEVCEncodeProbe.m`
+- `results/004-videotoolbox-hevc-encode/hevc-encode-result.md`
+
 ## Next Experiment
 
-Experiment 004 should test local encode/render plumbing:
+Experiment 005 should measure local decode/render and latency:
 
-1. Feed `SCStream` frames into a local low-latency VideoToolbox encoder or a
-   direct local Metal render path.
-2. Keep network transport out of scope.
-3. Measure CPU/GPU impact, frame latency, and dropped frames.
-4. Preserve the clean-room log before and after the test.
+1. Feed HEVC output into a local VideoToolbox decoder.
+2. Render decoded frames locally.
+3. Measure encode-to-decode latency and throughput.
+4. Decide whether to keep HEVC as a baseline or pivot toward a custom Metal
+   texture path sooner.

@@ -9,6 +9,8 @@ experiments/**/ReceiverCodecCapabilityProbe
 !experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe
 experiments/**/ReceiverDecodeRenderProbe
 !experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe
+experiments/**/ReceiverHEVCDecodeRenderProbe
+!experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe
 experiments/**/*.dSYM/
 
 # Temporary outputs

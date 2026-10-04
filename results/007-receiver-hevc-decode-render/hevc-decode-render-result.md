@@ -44,12 +44,12 @@
 - Rendered frames: 180
 - Render failures: 0
 - First decoded frame: 5120 x 2880 `420v`
-- Decode/render wall time: 1.510 seconds
-- Throughput: 119.19 rendered FPS
+- Decode/render wall time: 1.507 seconds
+- Throughput: 119.43 rendered FPS
 - Realtime multiple vs 60.00 FPS input: 1.99x
-- Average synchronous render time: 7.987 ms
-- First output callback wall time: 0.008 seconds
-- Last output callback wall time: 1.503 seconds
+- Average synchronous render time: 7.925 ms
+- First output callback wall time: 0.006 seconds
+- Last output callback wall time: 1.495 seconds
 
 ## Interpretation
 

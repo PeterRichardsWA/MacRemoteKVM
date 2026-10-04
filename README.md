@@ -82,6 +82,8 @@ experiments/
     media/
       h264-5k60-high-3s.mp4
   007-receiver-hevc-decode-render/
+    ReceiverHEVCDecodeRenderProbe
+    ReceiverHEVCDecodeRenderProbe.m
     run_hevc_decode_render_probe.sh
     media/
       hevc-5k60-main-3s.mp4

@@ -9,6 +9,26 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import <sys/sysctl.h>
 
+#ifndef DEFAULT_INPUT_PATH
+#define DEFAULT_INPUT_PATH "media/h264-5k60-high-3s.mp4"
+#endif
+
+#ifndef DEFAULT_OUTPUT_PATH
+#define DEFAULT_OUTPUT_PATH "../../results/006-receiver-decode-render/h264-decode-render-result.md"
+#endif
+
+#ifndef DEFAULT_REPORT_TITLE
+#define DEFAULT_REPORT_TITLE "Experiment 006 Result: H.264 Receiver Decode/Render Baseline"
+#endif
+
+#ifndef DEFAULT_CODEC_NAME
+#define DEFAULT_CODEC_NAME "H.264"
+#endif
+
+#ifndef DEFAULT_WINDOW_TITLE
+#define DEFAULT_WINDOW_TITLE "MacRemoteKVM Experiment 006"
+#endif
+
 static NSString *stringArgument(int argc, const char *argv[], const char *name, NSString *defaultValue) {
     NSString *needle = [NSString stringWithFormat:@"--%s=", name];
     for (int i = 1; i < argc; i++) {
@@ -699,11 +719,11 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
 
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
-        NSString *inputPath = stringArgument(argc, argv, "input", @"media/h264-5k60-high-3s.mp4");
-        NSString *outputPath = stringArgument(argc, argv, "output", @"../../results/006-receiver-decode-render/h264-decode-render-result.md");
-        NSString *reportTitle = stringArgument(argc, argv, "report-title", @"Experiment 006 Result: H.264 Receiver Decode/Render Baseline");
-        NSString *codecName = stringArgument(argc, argv, "codec-name", @"H.264");
-        NSString *windowTitle = stringArgument(argc, argv, "window-title", @"MacRemoteKVM Experiment 006");
+        NSString *inputPath = stringArgument(argc, argv, "input", [NSString stringWithUTF8String:DEFAULT_INPUT_PATH]);
+        NSString *outputPath = stringArgument(argc, argv, "output", [NSString stringWithUTF8String:DEFAULT_OUTPUT_PATH]);
+        NSString *reportTitle = stringArgument(argc, argv, "report-title", [NSString stringWithUTF8String:DEFAULT_REPORT_TITLE]);
+        NSString *codecName = stringArgument(argc, argv, "codec-name", [NSString stringWithUTF8String:DEFAULT_CODEC_NAME]);
+        NSString *windowTitle = stringArgument(argc, argv, "window-title", [NSString stringWithUTF8String:DEFAULT_WINDOW_TITLE]);
         NSUInteger inflight = integerArgument(argc, argv, "inflight", 3);
         BOOL fullscreen = boolArgument(argc, argv, "fullscreen", YES);
         BOOL requireHardware = boolArgument(argc, argv, "require-hardware", YES);

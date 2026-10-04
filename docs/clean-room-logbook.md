@@ -478,6 +478,10 @@ Implementation:
   roughly 32 Mbps, with 180 encoded frames.
 - Reused `experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe.m`
   as a codec-label-aware benchmark harness.
+- Added `experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe.m`
+  as the Experiment 007 wrapper source with HEVC defaults.
+- Packaged a signed universal `x86_64`/`arm64` binary directly in the
+  Experiment 007 directory.
 - Uses Apple APIs:
   - `AVAssetReader` to read compressed HEVC samples from the MP4 fixture.
   - `VTDecompressionSessionCreate` with
@@ -510,6 +514,8 @@ result still needs to come from the target iMac Pro Viewer.
 
 Artifacts:
 
+- `experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe`
+- `experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe.m`
 - `experiments/007-receiver-hevc-decode-render/run_hevc_decode_render_probe.sh`
 - `experiments/007-receiver-hevc-decode-render/media/hevc-5k60-main-3s.mp4`
 - `results/007-receiver-hevc-decode-render/hevc-decode-render-result.md`

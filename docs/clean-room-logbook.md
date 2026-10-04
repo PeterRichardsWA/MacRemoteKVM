@@ -877,11 +877,21 @@ Artifacts:
 ## Next Experiment
 
 Rerun the same Experiment 011 package across the two Macs over wired Ethernet
-and Thunderbolt networking. Start `./test.sh receiver` on the iMac Pro first,
-then run `./test.sh sender <receiver-host-or-ip>` on the sender Mac after
-confirming the receiver IP belongs to the wired Ethernet or Thunderbolt network
-interface. Compare H.264 3840x2160@60 and HEVC 3200x1800@60 against the Wi-Fi
-6E run before changing codecs or stream shapes.
+and Thunderbolt networking. Use the result-label argument so each network path
+gets its own results subdirectory:
+
+```sh
+./test.sh receiver wired-ethernet
+./test.sh sender <receiver-wired-ip> wired-ethernet
+
+./test.sh receiver thunderbolt
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt
+```
+
+Confirm the receiver IP belongs to the intended wired Ethernet or Thunderbolt
+network interface before starting the sender. Compare H.264 3840x2160@60 and
+HEVC 3200x1800@60 against the Wi-Fi 6E run before changing codecs or stream
+shapes.
 
 If wired Ethernet or Thunderbolt passes both candidates, the next gate is
 replacing prerecorded compressed fixtures with live sender capture/encode.

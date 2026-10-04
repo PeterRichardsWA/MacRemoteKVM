@@ -5,15 +5,49 @@ SCRIPT_DIR="${0:A:h}"
 BINARY_PATH="${SCRIPT_DIR}/TwoMacTransportProbe"
 SOURCE_PATH="${SCRIPT_DIR}/TwoMacTransportProbe.m"
 MEDIA_DIR="${SCRIPT_DIR}/media"
-RESULT_DIR="${SCRIPT_DIR}/results"
+RESULT_ROOT="${SCRIPT_DIR}/results"
 
 MODE="${1:-usage}"
 HOST="${2:-}"
+LABEL_ARG="${3:-}"
 PORT="${MACRKVM_PORT:-49320}"
 TRANSPORT_SECONDS="${MACRKVM_TRANSPORT_SECONDS:-30}"
 INFLIGHT="${MACRKVM_INFLIGHT:-3}"
 FULLSCREEN="${MACRKVM_FULLSCREEN:-yes}"
 PROGRESS_SECONDS="${MACRKVM_PROGRESS_SECONDS:-10}"
+
+sanitize_label() {
+  local raw="$1"
+  if [[ -z "${raw}" ]]; then
+    echo ""
+    return
+  fi
+  printf "%s" "${raw}" \
+    | tr "[:upper:]" "[:lower:]" \
+    | sed -E "s/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//"
+}
+
+result_label_for_mode() {
+  local label="${MACRKVM_RESULT_LABEL:-}"
+  if [[ -z "${label}" ]]; then
+    case "${MODE}" in
+      receiver|receive|loopback|smoke)
+        label="${HOST}"
+        ;;
+      sender|send)
+        label="${LABEL_ARG}"
+        ;;
+    esac
+  fi
+  sanitize_label "${label}"
+}
+
+RESULT_LABEL="$(result_label_for_mode)"
+if [[ -n "${RESULT_LABEL}" ]]; then
+  RESULT_DIR="${RESULT_ROOT}/${RESULT_LABEL}"
+else
+  RESULT_DIR="${RESULT_ROOT}"
+fi
 
 mkdir -p "${RESULT_DIR}"
 
@@ -62,6 +96,12 @@ Run this on the iMac Pro receiver first:
 Then run this on the sender Mac:
   ./test.sh sender <receiver-host-or-ip>
 
+Optional result labels keep each network path separate:
+  ./test.sh receiver wired-ethernet
+  ./test.sh sender <receiver-host-or-ip> wired-ethernet
+  ./test.sh receiver thunderbolt
+  ./test.sh sender <receiver-host-or-ip> thunderbolt
+
 Local smoke test on one Mac:
   MACRKVM_TRANSPORT_SECONDS=5 MACRKVM_FULLSCREEN=no ./test.sh loopback
 
@@ -70,6 +110,7 @@ Environment:
   MACRKVM_TRANSPORT_SECONDS=${TRANSPORT_SECONDS}
   MACRKVM_FULLSCREEN=${FULLSCREEN}
   MACRKVM_INFLIGHT=${INFLIGHT}
+  MACRKVM_RESULT_LABEL=${RESULT_LABEL}
 
 Results are written under:
   ${RESULT_DIR}

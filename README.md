@@ -293,17 +293,19 @@ On the iMac Pro receiver:
 
 ```sh
 cd experiments/011-two-mac-transport
-./test.sh receiver
+./test.sh receiver wired-ethernet
 ```
 
 On the sender Mac:
 
 ```sh
 cd experiments/011-two-mac-transport
-./test.sh sender <receiver-host-or-ip>
+./test.sh sender <receiver-wired-ip> wired-ethernet
 ```
 
-Results are written under `experiments/011-two-mac-transport/results/`.
+For Thunderbolt networking, use the same commands with `thunderbolt` as the
+label and the receiver IP address from the Thunderbolt network interface.
+Results are written under `experiments/011-two-mac-transport/results/<label>/`.
 
 ## Distribution Assumption
 

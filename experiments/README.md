@@ -193,6 +193,18 @@ over wired Ethernet and Thunderbolt networking before changing the codec
 candidates. Use the receiver IP address for the active wired or Thunderbolt
 interface when starting the sender.
 
+Use a result label to keep each transport run separate:
+
+```sh
+./test.sh receiver wired-ethernet
+./test.sh sender <receiver-wired-ip> wired-ethernet
+
+./test.sh receiver thunderbolt
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt
+```
+
+Labeled runs write results under `011-two-mac-transport/results/<label>/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

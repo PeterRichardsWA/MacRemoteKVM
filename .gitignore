@@ -1,0 +1,10 @@
+.DS_Store
+
+# Local build products
+experiments/**/VirtualDisplayProbe
+experiments/**/VirtualDisplayCaptureProbe
+experiments/**/*.dSYM/
+
+# Temporary outputs
+tmp/
+work/

@@ -27,6 +27,12 @@ and clean-room boundaries:
 docs/clean-room-logbook.md
 ```
 
+Workflow preferences are recorded here:
+
+```text
+docs/workflow-notes.md
+```
+
 Rules:
 
 - Do not reverse engineer proprietary products.

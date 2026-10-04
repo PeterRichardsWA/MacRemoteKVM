@@ -3,6 +3,7 @@
 # Local build products
 experiments/**/VirtualDisplayProbe
 experiments/**/VirtualDisplayCaptureProbe
+experiments/**/VirtualDisplayStreamProbe
 experiments/**/*.dSYM/
 
 # Temporary outputs

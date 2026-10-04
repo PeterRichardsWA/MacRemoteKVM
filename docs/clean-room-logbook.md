@@ -142,12 +142,80 @@ Artifacts:
 - `docs/virtual-display-proof-notes.md`
 - `experiments/002-screencapturekit-capture/VirtualDisplayCaptureProbe.m`
 
+## Experiment 003: Stream Live Virtual 5K Frames With ScreenCaptureKit
+
+Date: 2026-10-03
+
+Question: Can ScreenCaptureKit deliver continuous live `CMSampleBuffer` frames
+from the software-only virtual 5K display, with buffers backed by `IOSurface`?
+
+Implementation:
+
+- Wrote `experiments/003-live-screencapturekit-stream/VirtualDisplayStreamProbe.m`.
+- Created the virtual display independently.
+- Opened a borderless animated AppKit window on the virtual display to force
+  visible frame changes.
+- Used `SCStream` to capture the display as live screen frames.
+- Logged frame dimensions, frame status, IOSurface presence, timestamps, and
+  dirty rect counts.
+- No proprietary binaries or protocols inspected.
+
+Build command:
+
+```sh
+clang -fobjc-arc -framework AppKit -framework Foundation \
+  -framework CoreGraphics -framework CoreMedia -framework CoreVideo \
+  -framework IOSurface -framework ScreenCaptureKit \
+  VirtualDisplayStreamProbe.m -o VirtualDisplayStreamProbe
+```
+
+Run command:
+
+```sh
+./VirtualDisplayStreamProbe --seconds=5 --frames=180 \
+  --output=/Users/peterrichards/dev/MacRemoteKVM/results/003-live-screencapturekit-stream/stream-probe-result.md
+```
+
+ScreenCaptureKit enumeration:
+
+```text
+ScreenCaptureKit displays:
+  displayID=1 width=1728 height=1117 frame=1728x1117+0+0
+  displayID=12 width=2560 height=1440 frame=2560x1440+1728+0  <-- target
+```
+
+Probe result:
+
+```text
+Expected frame size: 5120x2880
+First frame size: 5120x2880
+Last frame size: 5120x2880
+Callbacks: 180
+Complete frames: 180
+Idle frames: 0
+Blank frames: 0
+Suspended frames: 0
+Observed callback FPS: 57.34
+Observed complete-frame FPS: 57.34
+Saw IOSurface-backed buffers: yes
+All image-buffer dimensions matched expected: yes
+Stream error: none
+```
+
+Conclusion: Passed. ScreenCaptureKit delivered continuous live 5120x2880 frames
+from the software-only virtual display, and the buffers were IOSurface-backed.
+
+Artifacts:
+
+- `experiments/003-live-screencapturekit-stream/VirtualDisplayStreamProbe.m`
+- `results/003-live-screencapturekit-stream/stream-probe-result.md`
+
 ## Next Experiment
 
-Experiment 003 should test live frame delivery:
+Experiment 004 should test local encode/render plumbing:
 
-1. Create the virtual 5K display.
-2. Start an `SCStream` against it.
-3. Receive continuous `CMSampleBuffer` frames backed by `IOSurface`.
-4. Log frame dimensions, timestamps, status, and approximate frame cadence.
-5. Do not encode or stream yet; prove live capture stability first.
+1. Feed `SCStream` frames into a local low-latency VideoToolbox encoder or a
+   direct local Metal render path.
+2. Keep network transport out of scope.
+3. Measure CPU/GPU impact, frame latency, and dropped frames.
+4. Preserve the clean-room log before and after the test.

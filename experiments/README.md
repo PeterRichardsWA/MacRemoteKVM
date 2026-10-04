@@ -48,6 +48,27 @@ PNG to `results/002-screencapturekit-capture/virtual-display-capture-probe.png`
 when run with the project README's `--output` argument. If macOS prompts for
 Screen Recording permission, grant it to the launching app and rerun.
 
+Build the live stream probe:
+
+```sh
+cd 003-live-screencapturekit-stream
+clang -fobjc-arc -framework AppKit -framework Foundation \
+  -framework CoreGraphics -framework CoreMedia -framework CoreVideo \
+  -framework IOSurface -framework ScreenCaptureKit \
+  VirtualDisplayStreamProbe.m -o VirtualDisplayStreamProbe
+```
+
+Run the live stream test:
+
+```sh
+./VirtualDisplayStreamProbe
+```
+
+Expected result: the probe creates a virtual 5K display, opens an animated
+window on it, starts an `SCStream`, receives live IOSurface-backed 5120x2880
+frames, and writes a Markdown/CSV report to
+`results/003-live-screencapturekit-stream/stream-probe-result.md`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="${0:A:h}"
 REPO_ROOT="${SCRIPT_DIR:h:h}"
-RESULT_DIR="${REPO_ROOT}/results/010-loopback-transport-prototype"
+RESULT_DIR="${SCRIPT_DIR}/results"
 BINARY_PATH="${SCRIPT_DIR}/LoopbackTransportProbe"
 SOURCE_PATH="${SCRIPT_DIR}/LoopbackTransportProbe.m"
 MEDIA_DIR="${SCRIPT_DIR}/media"

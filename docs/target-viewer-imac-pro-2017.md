@@ -111,3 +111,26 @@ Summary:
 Both first receiver candidates are viable for the first transport prototype.
 H.264 3840x2160 at 60 fps is the detail-first path. HEVC 3200x1800 at 60 fps is
 the lower-bandwidth comparison path.
+
+## Experiment 010 Loopback Transport Result
+
+The loopback transport prototype was run on this machine in fullscreen mode with
+a 5120x2880 drawable for 30 seconds per candidate.
+
+Summary:
+
+- H.264 3840x2160 at 60 fps: hardware session yes, 1801 frames sent,
+  1801 frames rendered, 59.93 rendered FPS, zero decode errors, zero render
+  failures.
+- HEVC 3200x1800 at 60 fps: hardware session yes, 1801 frames sent,
+  1801 frames rendered, 59.89 rendered FPS, zero decode errors, zero render
+  failures.
+- Average sender-to-receiver payload latency: 2.353 ms for H.264, 2.510 ms for
+  HEVC.
+- Average sender-to-rendered-frame latency: 49.309 ms for H.264, 51.182 ms for
+  HEVC.
+- Measured transport bitrate: 20.74 Mbps for H.264, 14.13 Mbps for HEVC.
+
+Both first receiver candidates survived the same-machine TCP loopback transport
+path. The next receiver-relevant gate is a real two-Mac transport run with
+serialized decoder configuration and network behavior.

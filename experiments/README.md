@@ -162,7 +162,7 @@ Expected result: the probe sends the H.264 3840x2160@60 and HEVC/H.265
 3200x1800@60 compressed frame payloads through a local TCP loopback transport,
 then rebuilds compressed sample buffers, requires a hardware VideoToolbox
 decoder, renders through Metal/Core Image, and writes reports plus a summary to
-`results/010-loopback-transport-prototype/`. By default each candidate runs
+`010-loopback-transport-prototype/results/`. By default each candidate runs
 fullscreen for 30 seconds. For a quick smoke run, set
 `MACRKVM_TRANSPORT_SECONDS=5 MACRKVM_FULLSCREEN=no`.
 

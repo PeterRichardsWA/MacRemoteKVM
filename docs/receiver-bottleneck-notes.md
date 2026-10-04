@@ -162,6 +162,19 @@ payloads through local TCP loopback before hardware decode/render. This is still
 a same-machine test, but it adds frame framing, sender pacing, receiver rebuild,
 and local sender-to-render latency measurement before the two-Mac network test.
 
+The target iMac Pro result passed for both first candidates:
+
+```text
+H.264 3840x2160 @ 60: 1801 sent, 1801 rendered, 59.93 rendered FPS
+HEVC 3200x1800 @ 60: 1801 sent, 1801 rendered, 59.89 rendered FPS
+Decode errors: 0
+Render failures: 0
+Average sender-to-rendered-frame latency: about 49-51 ms
+```
+
+This moves the next bottleneck to a real two-Mac transport run with serialized
+decoder configuration and network behavior.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

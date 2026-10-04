@@ -26,3 +26,7 @@ directory.
 
 Name the runnable shell entry point `test.sh`; the experiment directory name
 already describes what the test is.
+
+Write new experiment results to a `results/` subdirectory under that experiment
+directory. Do not make Peter copy files from the repository-level `results/`
+tree after a run.

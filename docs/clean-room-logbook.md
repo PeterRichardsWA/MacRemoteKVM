@@ -711,6 +711,9 @@ Implementation:
 - Added a self-contained `experiments/010-loopback-transport-prototype/media/`
   directory containing the two required input streams.
 - Added `experiments/010-loopback-transport-prototype/test.sh`.
+- Results are written under
+  `experiments/010-loopback-transport-prototype/results/`, matching the
+  experiment-local result convention adopted after this test.
 - Sends one compressed sample payload per frame over local TCP loopback from a
   sender thread to a receiver thread.
 - Rebuilds `CMSampleBuffer` objects on the receiver side, requires a hardware
@@ -743,8 +746,30 @@ Average sender-to-rendered-frame latency: 3.985 ms for H.264, 3.493 ms for HEVC
 ```
 
 Conclusion: The Experiment 010 package works locally. The local smoke test used
-a smaller windowed drawable, so it is not the decisive receiver result. The
-target iMac Pro Viewer should run the default fullscreen 30-second test.
+a smaller windowed drawable, so it is not the decisive receiver result.
+
+Target Viewer result:
+
+```text
+Machine: iMacPro1,1, Intel Xeon W-2191B, Radeon Pro Vega 64, macOS 15.8
+Run mode: fullscreen, 30 seconds per candidate, local TCP loopback
+H.264 3840x2160 @ 60: hardware session yes, 1801 sent, 1801 rendered, 59.93 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 1801 sent, 1801 rendered, 59.89 rendered FPS
+Decode errors: 0
+Render failures: 0
+VideoToolbox dropped-frame flags: 0
+Average sender-to-receiver payload latency: 2.353 ms for H.264, 2.510 ms for HEVC
+Average sender-to-rendered-frame latency: 49.309 ms for H.264, 51.182 ms for HEVC
+Measured transport bitrate: 20.74 Mbps for H.264, 14.13 Mbps for HEVC
+```
+
+Conclusion: Passed. Both validated stream shapes survived the local loopback
+transport path on the target iMac Pro with 1:1 sent/rendered frame counts, no
+decode errors, no render failures, and sustained 60 fps pacing. The sender-to-
+render latency proxy is now roughly 50 ms on the target receiver in this
+same-machine loopback setup. This still does not prove real network transport,
+live sender capture/encode, cross-machine clock synchronization, or input/cursor
+round trip.
 
 Artifacts:
 
@@ -752,10 +777,9 @@ Artifacts:
 - `experiments/010-loopback-transport-prototype/LoopbackTransportProbe.m`
 - `experiments/010-loopback-transport-prototype/test.sh`
 - `experiments/010-loopback-transport-prototype/media/`
-- `results/010-loopback-transport-prototype/`
+- `experiments/010-loopback-transport-prototype/results/`
 
 ## Next Experiment
 
-Run Experiment 010 on the target iMac Pro Viewer. If it passes, Experiment 011
-should split sender and receiver across two Macs and replace the in-process
-format-description sharing with serialized decoder configuration.
+Experiment 011 should split sender and receiver across two Macs and replace the
+in-process format-description sharing with serialized decoder configuration.

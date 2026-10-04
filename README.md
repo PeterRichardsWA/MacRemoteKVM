@@ -21,7 +21,8 @@ The next technical gate is receiver-side performance:
 
 1. H.264 5K60 hardware decode/render was tested first and failed to create a
    required-hardware decoder session on the target iMac Pro.
-2. Measure HEVC/H.265 5K60 decode/render latency on the Viewer next.
+2. Experiment 007 packages the HEVC/H.265 5K60 decode/render test for the
+   Viewer.
 3. Revisit lower-resolution H.264, ProRes, JPEG/MJPEG, AV1, or custom codecs
    only after the HEVC path is measured; the target iMac Pro did not report
    hardware decode support for ProRes, JPEG, or AV1.
@@ -80,6 +81,10 @@ experiments/
     run_h264_decode_render_probe.sh
     media/
       h264-5k60-high-3s.mp4
+  007-receiver-hevc-decode-render/
+    run_hevc_decode_render_probe.sh
+    media/
+      hevc-5k60-main-3s.mp4
 
 results/
   002-screencapturekit-capture/
@@ -92,6 +97,8 @@ results/
     receiver-codec-capability.md
   006-receiver-decode-render/
     h264-decode-render-result.md
+  007-receiver-hevc-decode-render/
+    hevc-decode-render-result.md
 ```
 
 ## Build Probes
@@ -153,6 +160,13 @@ H.264 receiver decode/render baseline:
 ```sh
 cd experiments/006-receiver-decode-render
 ./run_h264_decode_render_probe.sh
+```
+
+HEVC receiver decode/render baseline:
+
+```sh
+cd experiments/007-receiver-hevc-decode-render
+./run_hevc_decode_render_probe.sh
 ```
 
 ## Distribution Assumption

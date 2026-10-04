@@ -82,6 +82,17 @@ Fallback session create status without hardware requirement: 0 (noErr)
 That means 5K H.264 should not be the first transport path. The next receiver
 throughput test should move directly to HEVC/H.265.
 
+Experiment 007 packages that HEVC/H.265 test:
+
+```sh
+cd experiments/007-receiver-hevc-decode-render
+./run_hevc_decode_render_probe.sh
+```
+
+The local M1 Max smoke run created a required-hardware HEVC decoder session and
+rendered all 180 frames at roughly 119 FPS. The target iMac Pro run is still the
+decisive receiver result.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

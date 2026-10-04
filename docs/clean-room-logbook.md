@@ -33,6 +33,7 @@ engineering RetinaRelay or any other proprietary product.
 | 2026-10-04 | Apple VideoToolbox docs and `VTIsHardwareDecodeSupported` | Receiver-side codec capability testing. |
 | 2026-10-04 | Intel HEVC/H.265 hardware support note | Public hardware context for older Intel receiver Macs. |
 | 2026-10-04 | FFmpeg/libx264 test pattern generation | Synthetic H.264 5K60 fixture generation only; no implementation code copied. |
+| 2026-10-04 | FFmpeg/libx265 test pattern generation | Synthetic HEVC/H.265 5K60 fixture generation only; no implementation code copied. |
 
 ## Architecture Note: Receiver Bottleneck
 
@@ -461,8 +462,59 @@ Artifacts:
 - `experiments/006-receiver-decode-render/media/h264-5k60-high-3s.mp4`
 - `results/006-receiver-decode-render/h264-decode-render-result.md`
 
+## Experiment 007: HEVC Receiver Decode/Render Baseline
+
+Date: 2026-10-04
+
+Question: Can the Viewer/Receiver create a required-hardware VideoToolbox HEVC
+decoder for a 5120x2880 60 fps stream, and if so can it decode and render that
+stream through the display path?
+
+Implementation:
+
+- Generated `experiments/007-receiver-hevc-decode-render/media/hevc-5k60-main-3s.mp4`
+  from a synthetic `testsrc2` pattern using local FFmpeg/libx265 tooling.
+- The fixture is HEVC/H.265 Main Profile, 5120x2880, 60 fps, three seconds,
+  roughly 32 Mbps, with 180 encoded frames.
+- Reused `experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe.m`
+  as a codec-label-aware benchmark harness.
+- Uses Apple APIs:
+  - `AVAssetReader` to read compressed HEVC samples from the MP4 fixture.
+  - `VTDecompressionSessionCreate` with
+    `kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder`.
+  - `CAMetalLayer` plus Core Image to render decoded `CVPixelBuffer` frames.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x265 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./run_hevc_decode_render_probe.sh
+```
+
+Local smoke result:
+
+```text
+Hardware model: MacBookPro18,2
+Input: HEVC/H.265 Main Profile, 5120x2880, 60 fps, 180 frames
+Required hardware decoder: yes
+Hardware-required session create status: 0 (noErr)
+Rendered frames: 180
+Render failures: 0
+Throughput: 119.19 rendered FPS
+Realtime multiple vs 60.00 FPS input: 1.99x
+```
+
+Conclusion: The local smoke run passed on the development Mac. The decisive
+result still needs to come from the target iMac Pro Viewer.
+
+Artifacts:
+
+- `experiments/007-receiver-hevc-decode-render/run_hevc_decode_render_probe.sh`
+- `experiments/007-receiver-hevc-decode-render/media/hevc-5k60-main-3s.mp4`
+- `results/007-receiver-hevc-decode-render/hevc-decode-render-result.md`
+
 ## Next Experiment
 
-Experiment 007 should test HEVC/H.265 receiver decode/render with the same
-benchmark structure, using a 5120x2880/60 fps HEVC fixture and a required
-hardware VideoToolbox decoder session.
+Run Experiment 007 on the target iMac Pro Viewer and compare against the failed
+5K H.264 hardware-decode result from Experiment 006.

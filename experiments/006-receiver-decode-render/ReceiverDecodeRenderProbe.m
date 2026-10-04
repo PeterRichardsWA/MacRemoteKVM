@@ -272,10 +272,13 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
 @property(nonatomic, strong) MetalPresenter *presenter;
 @property(nonatomic, strong) NSURL *inputURL;
 @property(nonatomic, strong) NSString *outputPath;
+@property(nonatomic, strong) NSString *reportTitle;
+@property(nonatomic, strong) NSString *codecDisplayName;
 @property(nonatomic) NSUInteger inflightLimit;
 @property(nonatomic) BOOL requireHardwareDecoder;
 @property(nonatomic) NSUInteger sampleCount;
 @property(nonatomic) NSUInteger compressedFrameSamples;
+@property(nonatomic) NSUInteger skippedEmptySampleBuffers;
 @property(nonatomic) NSUInteger submittedFrames;
 @property(nonatomic) NSUInteger decodeCallErrors;
 @property(nonatomic) NSUInteger decodedFrames;
@@ -320,6 +323,8 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
         _firstDecodedPixelFormat = 0;
         _requireHardwareDecoder = YES;
         _inflightLimit = 3;
+        _reportTitle = @"Experiment 006 Result: H.264 Receiver Decode/Render Baseline";
+        _codecDisplayName = @"H.264";
     }
     return self;
 }
@@ -451,9 +456,16 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
     self.benchmarkStartDate = [NSDate date];
 
     for (id sampleObject in samples) {
+        CMSampleBufferRef sample = (__bridge CMSampleBufferRef)sampleObject;
+        if (CMSampleBufferGetNumSamples(sample) == 0) {
+            @synchronized (self) {
+                self.skippedEmptySampleBuffers += 1;
+            }
+            continue;
+        }
+
         dispatch_semaphore_wait(self.inflightSemaphore, DISPATCH_TIME_FOREVER);
 
-        CMSampleBufferRef sample = (__bridge CMSampleBufferRef)sampleObject;
         @synchronized (self) {
             self.submittedFrames += 1;
         }
@@ -564,9 +576,10 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
     double fileMB = (double)self.inputFileBytes / 1024.0 / 1024.0;
     double bitrateMbps = self.assetEstimatedDataRate > 0.0 ? (double)self.assetEstimatedDataRate / 1000000.0 : 0.0;
     double averageRenderMS = self.presenter.renderedFrames > 0 ? (self.presenter.totalRenderSeconds * 1000.0 / (double)self.presenter.renderedFrames) : 0.0;
+    NSString *codecName = self.codecDisplayName ?: @"codec";
 
     NSMutableString *report = [NSMutableString string];
-    [report appendString:@"# Experiment 006 Result: H.264 Receiver Decode/Render Baseline\n\n"];
+    [report appendFormat:@"# %@\n\n", self.reportTitle ?: @"Receiver Decode/Render Result"];
 
     [report appendString:@"## Machine\n\n"];
     NSProcessInfo *processInfo = NSProcessInfo.processInfo;
@@ -587,6 +600,7 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
     [report appendFormat:@"- Estimated bitrate: %.2f Mbps\n", bitrateMbps];
     [report appendFormat:@"- Compressed sample buffers read: %lu\n", (unsigned long)self.sampleCount];
     [report appendFormat:@"- Compressed frame samples read: %lu\n", (unsigned long)self.compressedFrameSamples];
+    [report appendFormat:@"- Empty sample buffers skipped before decode: %lu\n", (unsigned long)self.skippedEmptySampleBuffers];
 
     [report appendString:@"\n## Decoder Setup\n\n"];
     [report appendFormat:@"- Required hardware decoder: %@\n", yesNo(self.requireHardwareDecoder)];
@@ -646,11 +660,16 @@ static void decompressionOutputCallback(void *decompressionOutputRefCon,
 
     [report appendString:@"\n## Interpretation\n\n"];
     if (self.sessionCreateStatus != noErr) {
-        [report appendString:@"The required hardware H.264 decoder session could not be created for this 5K stream. H.264 should not be treated as viable for the first 5K transport path until this is explained or a different H.264 stream shape is tested.\n"];
+        [report appendFormat:@"The required hardware %@ decoder session could not be created for this 5K stream. %@ should not be treated as viable for the first 5K transport path until this is explained or a different stream shape is tested.\n",
+         codecName,
+         codecName];
     } else if (throughputFPS >= 60.0 && self.renderFailures == 0 && self.decodeOutputErrors == 0 && self.decodeCallErrors == 0) {
-        [report appendString:@"This machine sustained at least 60 rendered FPS for the local 5K H.264 decode/render path. H.264 remains viable for the first receiver transport prototype.\n"];
+        [report appendFormat:@"This machine sustained at least 60 rendered FPS for the local 5K %@ decode/render path. %@ remains viable for the first receiver transport prototype.\n",
+         codecName,
+         codecName];
     } else {
-        [report appendString:@"This machine did not sustain 60 rendered FPS in this local 5K H.264 decode/render probe. Compare against HEVC before choosing the first transport codec.\n"];
+        [report appendFormat:@"This machine did not sustain 60 rendered FPS in this local 5K %@ decode/render probe. Compare against other candidate codecs before choosing the first transport codec.\n",
+         codecName];
     }
 
     NSError *writeError = nil;
@@ -682,6 +701,9 @@ int main(int argc, const char *argv[]) {
     @autoreleasepool {
         NSString *inputPath = stringArgument(argc, argv, "input", @"media/h264-5k60-high-3s.mp4");
         NSString *outputPath = stringArgument(argc, argv, "output", @"../../results/006-receiver-decode-render/h264-decode-render-result.md");
+        NSString *reportTitle = stringArgument(argc, argv, "report-title", @"Experiment 006 Result: H.264 Receiver Decode/Render Baseline");
+        NSString *codecName = stringArgument(argc, argv, "codec-name", @"H.264");
+        NSString *windowTitle = stringArgument(argc, argv, "window-title", @"MacRemoteKVM Experiment 006");
         NSUInteger inflight = integerArgument(argc, argv, "inflight", 3);
         BOOL fullscreen = boolArgument(argc, argv, "fullscreen", YES);
         BOOL requireHardware = boolArgument(argc, argv, "require-hardware", YES);
@@ -696,7 +718,7 @@ int main(int argc, const char *argv[]) {
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
         MetalPresenter *presenter = [[MetalPresenter alloc] initFullscreen:fullscreen
-                                                                      title:@"MacRemoteKVM Experiment 006"
+                                                                      title:windowTitle
                                                               expectedWidth:5120
                                                              expectedHeight:2880];
 
@@ -709,6 +731,8 @@ int main(int argc, const char *argv[]) {
         benchmark.presenter = presenter;
         benchmark.inputURL = inputURL;
         benchmark.outputPath = outputPath;
+        benchmark.reportTitle = reportTitle;
+        benchmark.codecDisplayName = codecName;
         benchmark.inflightLimit = MAX((NSUInteger)1, inflight);
         benchmark.requireHardwareDecoder = requireHardware;
 

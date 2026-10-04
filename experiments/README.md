@@ -113,6 +113,18 @@ VideoToolbox H.264 decoder for the checked-in 5120x2880/60 fps test stream,
 renders decoded frames through Metal/Core Image, and writes a report to
 `results/006-receiver-decode-render/h264-decode-render-result.md`.
 
+Run the HEVC receiver decode/render baseline:
+
+```sh
+cd 007-receiver-hevc-decode-render
+./run_hevc_decode_render_probe.sh
+```
+
+Expected result: the probe opens a render window, requires a hardware
+VideoToolbox HEVC/H.265 decoder for the checked-in 5120x2880/60 fps test stream,
+renders decoded frames through Metal/Core Image, and writes a report to
+`results/007-receiver-hevc-decode-render/hevc-decode-render-result.md`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

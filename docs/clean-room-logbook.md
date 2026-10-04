@@ -48,6 +48,7 @@ primary bottleneck.
 Artifact:
 
 - `docs/receiver-bottleneck-notes.md`
+- `docs/target-viewer-imac-pro-2017.md`
 
 ## Experiment 001: Create Software-Only 5K Virtual Display
 
@@ -312,6 +313,10 @@ through VideoToolbox?
 Implementation:
 
 - Wrote `experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe.m`.
+- Packaged a signed universal `x86_64`/`arm64` binary so the iMac Pro can run
+  the test even if Xcode Command Line Tools are not installed.
+- Added `run_receiver_codec_capability.sh` to run the binary and write results
+  to the project `results/` directory.
 - Uses public VideoToolbox APIs:
   - `VTIsHardwareDecodeSupported`
   - `VTCopyVideoEncoderList`
@@ -322,16 +327,18 @@ Implementation:
 Build command:
 
 ```sh
-clang -fobjc-arc -framework Foundation -framework CoreMedia \
+clang -fobjc-arc -arch x86_64 -arch arm64 -mmacosx-version-min=15.0 \
+  -framework Foundation -framework CoreMedia \
   -framework VideoToolbox \
-  ReceiverCodecCapabilityProbe.m -o ReceiverCodecCapabilityProbe
+  experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe.m \
+  -o experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe
+codesign -s - experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe
 ```
 
 Run command:
 
 ```sh
-./ReceiverCodecCapabilityProbe \
-  --output=/Users/peterrichards/dev/MacRemoteKVM/results/005-receiver-codec-capability/receiver-codec-capability.md
+./run_receiver_codec_capability.sh
 ```
 
 Local sanity result:
@@ -353,7 +360,10 @@ on the older iMac Viewer.
 Artifacts:
 
 - `docs/receiver-bottleneck-notes.md`
+- `docs/target-viewer-imac-pro-2017.md`
+- `experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe`
 - `experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe.m`
+- `experiments/005-receiver-codec-capability/run_receiver_codec_capability.sh`
 - `results/005-receiver-codec-capability/receiver-codec-capability.md`
 
 ## Next Experiment

@@ -40,7 +40,14 @@ decode support by Intel generation. VideoToolbox exposes
 
 ## Next Test
 
-Create a receiver-side capability probe that runs on the old iMac and records:
+Run the packaged receiver-side capability probe on the old iMac:
+
+```sh
+cd experiments/005-receiver-codec-capability
+./run_receiver_codec_capability.sh
+```
+
+The probe records:
 
 - Mac model, CPU, GPU, macOS version.
 - Hardware decode support for H.264, HEVC/H.265, ProRes, JPEG, and AV1.

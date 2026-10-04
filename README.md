@@ -51,6 +51,7 @@ Rules:
 docs/
   clean-room-logbook.md
   receiver-bottleneck-notes.md
+  target-viewer-imac-pro-2017.md
   retina-kvm-feasibility-memo.md
   software-only-retinarelay-research-addendum.md
   virtual-display-proof-notes.md
@@ -66,7 +67,9 @@ experiments/
   004-videotoolbox-hevc-encode/
     VirtualDisplayHEVCEncodeProbe.m
   005-receiver-codec-capability/
+    ReceiverCodecCapabilityProbe
     ReceiverCodecCapabilityProbe.m
+    run_receiver_codec_capability.sh
 
 results/
   002-screencapturekit-capture/
@@ -130,10 +133,7 @@ Receiver codec capability:
 
 ```sh
 cd experiments/005-receiver-codec-capability
-clang -fobjc-arc -framework Foundation -framework CoreMedia \
-  -framework VideoToolbox \
-  ReceiverCodecCapabilityProbe.m -o ReceiverCodecCapabilityProbe
-./ReceiverCodecCapabilityProbe
+./run_receiver_codec_capability.sh
 ```
 
 ## Distribution Assumption

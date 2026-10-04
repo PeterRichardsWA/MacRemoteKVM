@@ -31,6 +31,36 @@ static NSString *sysctlString(const char *name) {
     return result;
 }
 
+static NSString *commandOutput(NSString *launchPath, NSArray<NSString *> *arguments) {
+    @try {
+        NSTask *task = [[NSTask alloc] init];
+        task.executableURL = [NSURL fileURLWithPath:launchPath];
+        task.arguments = arguments;
+
+        NSPipe *outputPipe = [NSPipe pipe];
+        task.standardOutput = outputPipe;
+        task.standardError = [NSPipe pipe];
+
+        NSError *launchError = nil;
+        if (![task launchAndReturnError:&launchError]) {
+            return [NSString stringWithFormat:@"unavailable: %@",
+                    launchError.localizedDescription ?: @"launch failed"];
+        }
+
+        NSData *data = [[outputPipe fileHandleForReading] readDataToEndOfFile];
+        [task waitUntilExit];
+        if (task.terminationStatus != 0) {
+            return [NSString stringWithFormat:@"unavailable: command exited with status %d",
+                    task.terminationStatus];
+        }
+
+        NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        return output.length > 0 ? output : @"unavailable";
+    } @catch (NSException *exception) {
+        return [NSString stringWithFormat:@"unavailable: %@", exception.reason ?: exception.name];
+    }
+}
+
 static NSString *fourCC(CMVideoCodecType codec) {
     char chars[5] = {
         (char)((codec >> 24) & 0xff),
@@ -58,8 +88,15 @@ static void appendDecodeLine(NSMutableString *report, NSString *name, CMVideoCod
 
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
-        NSString *defaultOutput = @"/Users/peterrichards/dev/MacRemoteKVM/results/005-receiver-codec-capability/receiver-codec-capability.md";
+        NSString *defaultOutput = @"../../results/005-receiver-codec-capability/receiver-codec-capability.md";
         NSString *outputPath = stringArgument(argc, argv, "output", defaultOutput);
+        NSString *outputDirectory = outputPath.stringByDeletingLastPathComponent;
+        if (outputDirectory.length > 0) {
+            [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
+                                    withIntermediateDirectories:YES
+                                                     attributes:nil
+                                                          error:nil];
+        }
 
         NSProcessInfo *processInfo = NSProcessInfo.processInfo;
         NSMutableString *report = [NSMutableString string];
@@ -72,6 +109,15 @@ int main(int argc, const char *argv[]) {
         [report appendFormat:@"- Processor count: %lu\n", (unsigned long)processInfo.processorCount];
         [report appendFormat:@"- Active processor count: %lu\n", (unsigned long)processInfo.activeProcessorCount];
         [report appendFormat:@"- Physical memory: %.2f GB\n", (double)processInfo.physicalMemory / 1024.0 / 1024.0 / 1024.0];
+
+        NSString *displayHardware = commandOutput(@"/usr/sbin/system_profiler", @[@"SPDisplaysDataType"]);
+        [report appendString:@"\n## Display Hardware\n\n"];
+        [report appendString:@"```text\n"];
+        [report appendString:displayHardware];
+        if (![displayHardware hasSuffix:@"\n"]) {
+            [report appendString:@"\n"];
+        }
+        [report appendString:@"```\n"];
 
         [report appendString:@"\n## Hardware Decode Support\n\n"];
         [report appendString:@"| Codec | FourCC | Hardware Decode Supported |\n"];

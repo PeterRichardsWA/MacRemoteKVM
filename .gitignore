@@ -6,6 +6,7 @@ experiments/**/VirtualDisplayCaptureProbe
 experiments/**/VirtualDisplayStreamProbe
 experiments/**/VirtualDisplayHEVCEncodeProbe
 experiments/**/ReceiverCodecCapabilityProbe
+!experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe
 experiments/**/*.dSYM/
 
 # Temporary outputs

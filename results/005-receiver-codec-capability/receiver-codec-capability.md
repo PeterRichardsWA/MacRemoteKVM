@@ -10,6 +10,31 @@
 - Active processor count: 10
 - Physical memory: 64.00 GB
 
+## Display Hardware
+
+```text
+Graphics/Displays:
+
+    Apple M1 Max:
+
+      Chipset Model: Apple M1 Max
+      Type: GPU
+      Bus: Built-In
+      Total Number of Cores: 32
+      Vendor: Apple (0x106b)
+      Metal Support: Metal 4
+      Displays:
+        Color LCD:
+          Display Type: Built-in Liquid Retina XDR Display
+          Resolution: 3456 x 2234 Retina
+          Main Display: Yes
+          Mirror: Off
+          Online: Yes
+          Automatically Adjust Brightness: No
+          Connection Type: Internal
+
+```
+
 ## Hardware Decode Support
 
 | Codec | FourCC | Hardware Decode Supported |

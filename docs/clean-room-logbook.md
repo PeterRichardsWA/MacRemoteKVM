@@ -627,6 +627,8 @@ Candidate paths:
 Implementation:
 
 - Added `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe.m`.
+- Added a self-contained `experiments/009-receiver-candidate-stress/media/`
+  directory containing the two required input streams.
 - Reused the native Apple API benchmark harness from Experiment 006.
 - Loops the selected compressed fixture for a configurable duration while
   requiring a hardware VideoToolbox decoder.
@@ -642,16 +644,16 @@ Implementation:
 Run command:
 
 ```sh
-./run_candidate_stress_probe.sh
+./test.sh
 ```
 
 Local smoke result:
 
 ```text
 Machine: MacBookPro18,2, Apple M1 Max
-Run mode: windowed, 4 seconds per candidate
-H.264 3840x2160 @ 60: hardware session yes, 478 frames, 118.95 rendered FPS
-HEVC 3200x1800 @ 60: hardware session yes, 483 frames, 120.14 rendered FPS
+Run mode: windowed, 3 seconds per candidate, self-contained media directory
+H.264 3840x2160 @ 60: hardware session yes, 357 frames, 118.31 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 363 frames, 120.29 rendered FPS
 Decode errors: 0
 Render failures: 0
 Thermal state: nominal -> nominal for both candidates
@@ -665,7 +667,8 @@ Artifacts:
 
 - `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe`
 - `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe.m`
-- `experiments/009-receiver-candidate-stress/run_candidate_stress_probe.sh`
+- `experiments/009-receiver-candidate-stress/test.sh`
+- `experiments/009-receiver-candidate-stress/media/`
 - `results/009-receiver-candidate-stress/`
 
 ## Next Experiment

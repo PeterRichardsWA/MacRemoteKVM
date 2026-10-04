@@ -129,7 +129,7 @@ Experiment 009 packages the longer receiver stress test:
 
 ```sh
 cd experiments/009-receiver-candidate-stress
-./run_candidate_stress_probe.sh
+./test.sh
 ```
 
 It compares those two candidates over a default 120-second fullscreen run and

@@ -6,7 +6,7 @@ REPO_ROOT="${SCRIPT_DIR:h:h}"
 RESULT_DIR="${REPO_ROOT}/results/009-receiver-candidate-stress"
 BINARY_PATH="${SCRIPT_DIR}/ReceiverCandidateStressProbe"
 SOURCE_PATH="${SCRIPT_DIR}/ReceiverCandidateStressProbe.m"
-MEDIA_DIR="${REPO_ROOT}/experiments/008-receiver-decode-envelope/media"
+MEDIA_DIR="${SCRIPT_DIR}/media"
 SUMMARY_PATH="${RESULT_DIR}/candidate-stress-summary.md"
 
 STRESS_SECONDS="${MACRKVM_STRESS_SECONDS:-120}"

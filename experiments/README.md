@@ -141,7 +141,7 @@ Run the receiver candidate stress test:
 
 ```sh
 cd 009-receiver-candidate-stress
-./run_candidate_stress_probe.sh
+./test.sh
 ```
 
 Expected result: the probe runs the two first viable receiver candidates for a

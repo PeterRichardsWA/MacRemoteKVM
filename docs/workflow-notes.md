@@ -17,3 +17,12 @@ commit to `origin`.
 
 Do not wait for separate confirmation before making these local commits and
 pushes.
+
+## Experiment Packaging
+
+Each experiment directory should be self-contained for the files it needs to run.
+Do not make a new test depend on input media from a previous experiment
+directory.
+
+Name the runnable shell entry point `test.sh`; the experiment directory name
+already describes what the test is.

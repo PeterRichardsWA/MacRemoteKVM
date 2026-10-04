@@ -108,7 +108,10 @@ experiments/
   009-receiver-candidate-stress/
     ReceiverCandidateStressProbe
     ReceiverCandidateStressProbe.m
-    run_candidate_stress_probe.sh
+    test.sh
+    media/
+      h264-3840x2160-60-high-3s.mp4
+      hevc-3200x1800-60-main-3s.mp4
 
 results/
   002-screencapturekit-capture/
@@ -208,14 +211,14 @@ Receiver candidate stress test:
 
 ```sh
 cd experiments/009-receiver-candidate-stress
-./run_candidate_stress_probe.sh
+./test.sh
 ```
 
 By default Experiment 009 runs each candidate fullscreen for 120 seconds. To run
 a shorter smoke pass, set `MACRKVM_STRESS_SECONDS`, for example:
 
 ```sh
-MACRKVM_STRESS_SECONDS=15 MACRKVM_FULLSCREEN=no ./run_candidate_stress_probe.sh
+MACRKVM_STRESS_SECONDS=15 MACRKVM_FULLSCREEN=no ./test.sh
 ```
 
 ## Distribution Assumption

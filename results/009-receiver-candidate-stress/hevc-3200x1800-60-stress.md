@@ -11,7 +11,7 @@
 
 ## Stress Settings
 
-- Requested duration: 4.0 seconds
+- Requested duration: 3.0 seconds
 - Max submitted frames: unlimited
 - Completed source loops: 3
 - In-flight decode limit: 3
@@ -19,7 +19,7 @@
 
 ## Input Stream
 
-- Path: `/Users/peterrichards/dev/MacRemoteKVM/experiments/008-receiver-decode-envelope/media/hevc-3200x1800-60-main-3s.mp4`
+- Path: `/Users/peterrichards/dev/MacRemoteKVM/experiments/009-receiver-candidate-stress/media/hevc-3200x1800-60-main-3s.mp4`
 - File size: 5.04 MB
 - Codec FourCC: `hvc1`
 - Format dimensions: 3200 x 1800
@@ -42,38 +42,38 @@
 
 ## Stress Result
 
-- Submitted frames: 483
-- Represented source-video duration: 8.050 seconds
+- Submitted frames: 363
+- Represented source-video duration: 6.050 seconds
 - Decode call errors: 0
-- Decode output callbacks: 483
+- Decode output callbacks: 363
 - Decode output errors: 0
 - VideoToolbox dropped-frame flags: 0
-- Rendered frames: 483
+- Rendered frames: 363
 - Render failures: 0
 - First decoded frame: 3200 x 1800 `420v`
-- Decode/render wall time: 4.020 seconds
-- Throughput: 120.14 rendered FPS
+- Decode/render wall time: 3.018 seconds
+- Throughput: 120.29 rendered FPS
 - Realtime multiple vs 60.00 FPS input: 2.00x
-- Average synchronous render time: 7.848 ms
-- First output callback wall time: 0.003 seconds
-- Last output callback wall time: 4.013 seconds
+- Average synchronous render time: 7.893 ms
+- First output callback wall time: 0.004 seconds
+- Last output callback wall time: 3.009 seconds
 
 ## Runtime Health
 
 - Thermal state start: nominal
 - Thermal state end: nominal
-- Process user CPU time: 0.349 seconds
-- Process system CPU time: 0.495 seconds
-- Process CPU realtime multiple: 0.21x
-- Resident memory start: 46.52 MB
-- Resident memory end: 58.41 MB
+- Process user CPU time: 0.242 seconds
+- Process system CPU time: 0.342 seconds
+- Process CPU realtime multiple: 0.19x
+- Resident memory start: 46.59 MB
+- Resident memory end: 53.64 MB
 
 ## Latency Proxy
 
 This experiment does not include network transport, sender capture, or cursor input, so it cannot measure end-to-end KVM latency yet. It records decoder startup and synchronous render cost as the current local receiver latency proxy.
 
-- Decoder startup to first output callback: 0.003 seconds
-- Average synchronous render cost: 7.848 ms
+- Decoder startup to first output callback: 0.004 seconds
+- Average synchronous render cost: 7.893 ms
 
 ## Observer Notes
 

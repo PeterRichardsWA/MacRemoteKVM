@@ -352,7 +352,7 @@ static double residentMemoryMB(void) {
 
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
-        NSString *inputPath = stringArgument(argc, argv, "input", @"../008-receiver-decode-envelope/media/h264-3840x2160-60-high-3s.mp4");
+        NSString *inputPath = stringArgument(argc, argv, "input", @"media/h264-3840x2160-60-high-3s.mp4");
         NSString *outputPath = stringArgument(argc, argv, "output", @"../../results/009-receiver-candidate-stress/h264-3840x2160-60-stress.md");
         NSString *reportTitle = stringArgument(argc, argv, "report-title", @"Experiment 009 Result: Receiver Candidate Stress");
         NSString *codecName = stringArgument(argc, argv, "codec-name", @"H.264");

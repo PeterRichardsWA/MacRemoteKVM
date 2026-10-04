@@ -660,8 +660,29 @@ Thermal state: nominal -> nominal for both candidates
 ```
 
 Conclusion: The Experiment 009 package works locally. The local smoke test used
-a smaller windowed drawable, so it is not the decisive receiver result. The
-target iMac Pro Viewer should run the default fullscreen 120-second test.
+a smaller windowed drawable, so it is not the decisive receiver result.
+
+Target Viewer result:
+
+```text
+Machine: iMacPro1,1, Intel Xeon W-2191B, Radeon Pro Vega 64, macOS 15.8
+Run mode: fullscreen, 120 seconds per candidate, 5120x2880 drawable
+H.264 3840x2160 @ 60: hardware session yes, 7196 frames, 59.95 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 7196 frames, 59.94 rendered FPS
+Decode errors: 0
+Render failures: 0
+VideoToolbox dropped-frame flags: 0
+Thermal state: nominal -> nominal for both candidates
+Process CPU realtime multiple: 0.08x for both candidates
+Average synchronous render cost: about 16.32 ms for both candidates
+```
+
+Conclusion: Passed. Both first receiver candidates sustained the 120-second
+fullscreen stress run on the target iMac Pro. H.264 3840x2160@60 should be the
+detail-first prototype path. HEVC 3200x1800@60 should remain the lower-bandwidth
+prototype path. This does not yet prove network transport, sender capture,
+end-to-end latency, cursor/input loop behavior, or visual quality on real
+desktop content.
 
 Artifacts:
 
@@ -673,6 +694,8 @@ Artifacts:
 
 ## Next Experiment
 
-Run Experiment 009 on the target iMac Pro Viewer. Use the default fullscreen
-120-second run first, then compare H.264 3840x2160@60 against HEVC
-3200x1800@60 for stability, thermals, and visible quality.
+Experiment 010 should build the first local sender-to-receiver transport
+prototype. It should use the now-validated receiver paths, starting with H.264
+3840x2160@60 and keeping HEVC 3200x1800@60 as the lower-bandwidth comparison
+path. The next measurement should include transport latency and frame pacing,
+not just local decode/render throughput.

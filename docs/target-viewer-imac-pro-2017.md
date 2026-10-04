@@ -91,3 +91,23 @@ Summary:
 The first viable receiver prototype path should use H.264 3840x2160 at 60 fps
 scaled to the 5K display, or HEVC 3200x1800 at 60 fps if lower bandwidth matters
 more than spatial detail.
+
+## Experiment 009 Receiver Stress Result
+
+The receiver candidate stress test was run on this machine in fullscreen mode
+with a 5120x2880 drawable for 120 seconds per candidate.
+
+Summary:
+
+- H.264 3840x2160 at 60 fps: hardware session yes, 7196 rendered frames,
+  59.95 rendered FPS, zero decode errors, zero render failures.
+- HEVC 3200x1800 at 60 fps: hardware session yes, 7196 rendered frames,
+  59.94 rendered FPS, zero decode errors, zero render failures.
+- VideoToolbox dropped-frame flags: zero for both candidates.
+- Thermal state: nominal to nominal for both candidates.
+- Process CPU realtime multiple: 0.08x for both candidates.
+- Average synchronous render cost: about 16.32 ms for both candidates.
+
+Both first receiver candidates are viable for the first transport prototype.
+H.264 3840x2160 at 60 fps is the detail-first path. HEVC 3200x1800 at 60 fps is
+the lower-bandwidth comparison path.

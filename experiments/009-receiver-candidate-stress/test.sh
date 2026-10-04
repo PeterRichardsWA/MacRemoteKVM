@@ -12,6 +12,7 @@ SUMMARY_PATH="${RESULT_DIR}/candidate-stress-summary.md"
 STRESS_SECONDS="${MACRKVM_STRESS_SECONDS:-120}"
 INFLIGHT="${MACRKVM_INFLIGHT:-3}"
 FULLSCREEN="${MACRKVM_FULLSCREEN:-yes}"
+PROGRESS_SECONDS="${MACRKVM_PROGRESS_SECONDS:-10}"
 
 mkdir -p "${RESULT_DIR}"
 
@@ -50,6 +51,41 @@ if [[ ! -x "${BINARY_PATH}" || "${SOURCE_PATH}" -nt "${BINARY_PATH}" ]]; then
   build_probe
 fi
 
+run_with_progress() {
+  local label="$1"
+  shift
+  local started
+  local elapsed
+  local pid
+  local exit_code
+
+  echo
+  echo "Starting ${label}"
+  echo "Target duration: ${STRESS_SECONDS}s, fullscreen: ${FULLSCREEN}, in-flight decode limit: ${INFLIGHT}"
+
+  started="$(date +%s)"
+  "$@" &
+  pid="$!"
+
+  while kill -0 "${pid}" >/dev/null 2>&1; do
+    sleep "${PROGRESS_SECONDS}"
+    if kill -0 "${pid}" >/dev/null 2>&1; then
+      elapsed="$(($(date +%s) - started))"
+      echo "  ${label}: ${elapsed}s elapsed"
+    fi
+  done
+
+  exit_code=0
+  wait "${pid}" || exit_code="$?"
+  elapsed="$(($(date +%s) - started))"
+  if [[ "${exit_code}" -eq 0 ]]; then
+    echo "Finished ${label} in ${elapsed}s"
+  else
+    echo "Failed ${label} after ${elapsed}s with status ${exit_code}" >&2
+  fi
+  return "${exit_code}"
+}
+
 run_case() {
   local slug="$1"
   local codec="$2"
@@ -57,7 +93,8 @@ run_case() {
   local media="$4"
   local result="${RESULT_DIR}/${slug}-stress.md"
 
-  "${BINARY_PATH}" \
+  run_with_progress "${slug}" \
+    "${BINARY_PATH}" \
     --input="${MEDIA_DIR}/${media}" \
     --output="${result}" \
     --report-title="Experiment 009 Result: ${title} Stress" \
@@ -68,6 +105,10 @@ run_case() {
     --fullscreen="${FULLSCREEN}" \
     --require-hardware=yes
 }
+
+echo "Experiment 009 receiver candidate stress test"
+echo "This runs two candidates. Expected runtime is roughly two ${STRESS_SECONDS}s passes plus build/startup."
+echo "Results directory: ${RESULT_DIR}"
 
 run_case "h264-3840x2160-60" "H.264" "H.264 3840x2160 at 60 fps" "h264-3840x2160-60-high-3s.mp4"
 run_case "hevc-3200x1800-60" "HEVC/H.265" "HEVC 3200x1800 at 60 fps" "hevc-3200x1800-60-main-3s.mp4"

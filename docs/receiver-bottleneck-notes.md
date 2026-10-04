@@ -34,10 +34,11 @@ iMac Pro, but the receiver envelope test found viable lower points:
 4. HEVC/H.265 5120x2880 at 30 fps still failed to create a required-hardware
    decoder session.
 
-The first prototype receiver path should likely use H.264 4K60 scaled to the 5K
-display, with HEVC 3200x1800@60 as a lower-bandwidth alternative. If full 5K
-fidelity remains required, the next design path is tiling, adaptive resolution,
-or a custom desktop-oriented codec rather than a single 5K60 VideoToolbox stream.
+The first prototype receiver path should use H.264 4K60 scaled to the 5K
+display as the detail-first candidate, with HEVC 3200x1800@60 as the
+lower-bandwidth alternative. If full 5K fidelity remains required, the next
+design path is tiling, adaptive resolution, or a custom desktop-oriented codec
+rather than a single 5K60 VideoToolbox stream.
 
 ## Public Hardware Context
 
@@ -134,8 +135,20 @@ cd experiments/009-receiver-candidate-stress
 
 It compares those two candidates over a default 120-second fullscreen run and
 records hardware decoder status, rendered FPS, render cost, process CPU, memory,
-thermal state, and local receiver latency proxies. The target iMac Pro result
-will decide which stream shape should become the first transport prototype.
+thermal state, and local receiver latency proxies.
+
+The target iMac Pro result passed for both first candidates:
+
+```text
+H.264 3840x2160 @ 60: hardware session yes, 7196 frames, 59.95 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 7196 frames, 59.94 rendered FPS
+Decode errors: 0
+Render failures: 0
+Thermal state: nominal -> nominal for both candidates
+```
+
+This moves the bottleneck from local receiver decode/render to transport,
+frame pacing, end-to-end latency, and real desktop visual quality.
 
 ## Sources
 

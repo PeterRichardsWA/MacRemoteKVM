@@ -28,10 +28,17 @@ The receiver decode envelope now has usable points on the target iMac Pro:
 4. HEVC/H.265 5120x2880 at 30 fps still failed to create a required-hardware
    decoder session.
 
-Experiment 009 now packages the first receiver stress test for those viable
-candidates. It runs H.264 4K60 scaled to the 5K display and HEVC 3200x1800@60,
-then records hardware decoder status, rendered FPS, render cost, process CPU,
-memory, thermal state, and local receiver latency proxies.
+Experiment 009 passed on the target iMac Pro. Both first receiver candidates
+sustained a 120-second fullscreen decode/render stress run into the 5120x2880
+drawable with hardware decoder sessions, zero decode errors, zero render
+failures, and nominal thermal state:
+
+1. H.264 3840x2160 at 60 fps rendered at about 59.95 FPS.
+2. HEVC/H.265 3200x1800 at 60 fps rendered at about 59.94 FPS.
+
+The next technical gate is building the first local transport prototype around
+these stream shapes. H.264 4K60 is the detail-first candidate; HEVC 3200x1800@60
+is the lower-bandwidth candidate.
 
 ## Clean-Room Record
 

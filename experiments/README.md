@@ -186,6 +186,13 @@ uses big-endian network headers and serialized H.264/HEVC parameter sets, so the
 receiver rebuilds the decoder configuration instead of sharing it in-process.
 Results are written under `011-two-mac-transport/results/`.
 
+The first real two-Mac run was over Wi-Fi 6E. HEVC 3200x1800@60 passed for the
+full 30-second run. H.264 3840x2160@60 decoded and rendered all received frames,
+but the sender only delivered 1190 frames in 30 seconds. Rerun this same test
+over wired Ethernet and Thunderbolt networking before changing the codec
+candidates. Use the receiver IP address for the active wired or Thunderbolt
+interface when starting the sender.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

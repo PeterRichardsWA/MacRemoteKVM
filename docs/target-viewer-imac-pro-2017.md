@@ -134,3 +134,27 @@ Summary:
 Both first receiver candidates survived the same-machine TCP loopback transport
 path. The next receiver-relevant gate is a real two-Mac transport run with
 serialized decoder configuration and network behavior.
+
+## Experiment 011 Wi-Fi 6E Two-Mac Transport Result
+
+The two-Mac transport probe was run with an M1 Max MacBook Pro sender and this
+iMac Pro as the receiver over Wi-Fi 6E.
+
+Summary:
+
+- H.264 3840x2160 at 60 fps: hardware session yes, 1190 frames received,
+  1190 frames rendered, 59.92 rendered FPS while frames were arriving, zero
+  decode errors, zero render failures. Sender-side pacing was only 39.65 FPS
+  over the 30-second run.
+- HEVC 3200x1800 at 60 fps: hardware session yes, 1801 frames sent,
+  1801 frames received, 1801 frames rendered, 59.99 rendered FPS, zero decode
+  errors, zero render failures.
+- Average receive-complete-to-render latency: 49.971 ms for H.264, 34.757 ms
+  for HEVC.
+- Measured receiver bitrate: 20.66 Mbps for H.264, 14.12 Mbps for HEVC.
+
+HEVC 3200x1800@60 passed across the Wi-Fi 6E two-Mac path. H.264
+3840x2160@60 did not pass as an end-to-end Wi-Fi 6E sender path because the
+sender only delivered 1190 frames in 30 seconds, but the iMac Pro receiver
+decoded and rendered every frame it received. The next comparison should rerun
+the same Experiment 011 package over wired Ethernet and Thunderbolt networking.

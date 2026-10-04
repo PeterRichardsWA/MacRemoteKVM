@@ -831,9 +831,39 @@ Render failures: 0
 Serialized parameter sets: 2 for H.264, 4 for HEVC
 ```
 
-Conclusion: The Experiment 011 package works locally. The smoke test proves the
-serialized decoder configuration path and TCP framing path. The decisive result
-must come from the fast-Mac sender to iMac Pro receiver run.
+Two-Mac Wi-Fi 6E result:
+
+```text
+Network condition: Wi-Fi 6E
+Sender: MacBookPro18,2, Apple M1 Max, macOS 26.6.2, peters-macbook-pro.local
+Receiver: iMacPro1,1, Intel Xeon W-2191B, macOS 15.8, dadimacpro.local
+Destination: 192.168.0.62:49320
+
+H.264 3840x2160 @ 60:
+  Sender: 1190 frames sent in 30.010 seconds, 39.65 FPS, 13.67 Mbps
+  Receiver: 1190 received, 1190 rendered, 59.92 rendered FPS, 20.66 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 49.971 ms
+  Average frame interarrival: 16.660 ms
+
+HEVC 3200x1800 @ 60:
+  Sender: 1801 frames sent in 30.001 seconds, 60.03 FPS, 14.13 Mbps
+  Receiver: 1801 received, 1801 rendered, 59.99 rendered FPS, 14.12 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 34.757 ms
+  Average frame interarrival: 16.656 ms
+```
+
+Conclusion: The Experiment 011 package works locally and across two Macs. The
+local smoke test proves the serialized decoder configuration path and TCP
+framing path. The Wi-Fi 6E two-Mac result proves that HEVC 3200x1800@60 can
+complete a full 30-second sender-to-receiver run into the iMac Pro display path
+with 1:1 sent/received/rendered frame counts. H.264 3840x2160@60 did not pass
+the Wi-Fi 6E sender/network path in this run because the sender only delivered
+1190 frames in 30 seconds. The receiver decoded and rendered every H.264 frame it
+received, so this result does not rule out H.264 on a better transport.
 
 Artifacts:
 
@@ -842,10 +872,16 @@ Artifacts:
 - `experiments/011-two-mac-transport/test.sh`
 - `experiments/011-two-mac-transport/media/`
 - `experiments/011-two-mac-transport/results/`
+- `results/011-two-mac-transport/results/`
 
 ## Next Experiment
 
-Run Experiment 011 across the two Macs. Start `./test.sh receiver` on the iMac
-Pro first, then run `./test.sh sender <receiver-host-or-ip>` on the sender Mac.
-If it passes, the next gate is replacing prerecorded compressed fixtures with
-live sender capture/encode.
+Rerun the same Experiment 011 package across the two Macs over wired Ethernet
+and Thunderbolt networking. Start `./test.sh receiver` on the iMac Pro first,
+then run `./test.sh sender <receiver-host-or-ip>` on the sender Mac after
+confirming the receiver IP belongs to the wired Ethernet or Thunderbolt network
+interface. Compare H.264 3840x2160@60 and HEVC 3200x1800@60 against the Wi-Fi
+6E run before changing codecs or stream shapes.
+
+If wired Ethernet or Thunderbolt passes both candidates, the next gate is
+replacing prerecorded compressed fixtures with live sender capture/encode.

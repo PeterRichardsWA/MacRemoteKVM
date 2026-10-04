@@ -49,8 +49,21 @@ decode/render, measuring frame pacing and sender-to-render latency:
 Experiment 011 now packages the first real two-Mac transport test. It has
 separate receiver and sender modes, uses big-endian network headers, serializes
 H.264/HEVC decoder parameter sets, and writes results under the experiment
-directory. The local loopback smoke run passed; the next decisive result is the
-actual fast-Mac-to-iMac-Pro network run.
+directory. The local loopback smoke run passed.
+
+The first two-Mac run was over Wi-Fi 6E from the M1 Max MacBook Pro sender to
+the iMac Pro receiver:
+
+1. HEVC/H.265 3200x1800 at 60 fps passed for the full 30-second run: 1801
+   frames sent, 1801 received, 1801 rendered, zero decode errors, zero render
+   failures.
+2. H.264 3840x2160 at 60 fps decoded and rendered every received frame, but the
+   sender only delivered 1190 frames in 30 seconds, about 39.65 fps. This is a
+   transport/sender pacing result for the Wi-Fi 6E path, not a receiver decode
+   failure.
+
+Next we need to rerun the same Experiment 011 package over wired Ethernet and
+Thunderbolt networking.
 
 ## Clean-Room Record
 

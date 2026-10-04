@@ -194,6 +194,20 @@ parameter sets and records receiver-side frame pacing and receive-to-render
 latency. If this passes, the remaining major video-path gap is live
 ScreenCaptureKit capture and live encode feeding the network sender.
 
+The first two-Mac run used Wi-Fi 6E. HEVC 3200x1800@60 passed cleanly: 1801
+frames sent, received, and rendered over 30 seconds, with zero decode errors and
+zero render failures. H.264 3840x2160@60 did not complete a full 60 fps sender
+run over that Wi-Fi path: the sender delivered 1190 frames in 30 seconds, while
+the receiver decoded and rendered all 1190 received frames at about 59.92
+rendered FPS. This points at sender pacing, TCP backpressure, or wireless
+transport behavior for that run; it is not evidence that the iMac Pro receiver
+cannot decode/render the H.264 stream.
+
+The next receiver-relevant comparison is the same Experiment 011 run over wired
+Ethernet and Thunderbolt networking. Those runs should use the same stream
+fixtures and report structure so the only intentional variable is the network
+path.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

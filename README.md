@@ -15,11 +15,12 @@ The first four technical gates have passed:
 4. Live 5120x2880 frames were accepted by a local VideoToolbox HEVC encoder
    with zero encode errors or dropped frames in the short probe.
 
-The next technical gate is performance/latency:
+The next technical gate is receiver-side performance:
 
-1. Measure latency and CPU/GPU cost for HEVC encode/decode.
-2. Compare HEVC against direct local Metal rendering and later custom codecs.
-3. Try a local receiver path before adding network transport.
+1. Run receiver codec capability checks on the older iMac Viewer.
+2. Measure decode/render latency on the Viewer, not only encode speed on the
+   faster Host.
+3. Compare H.264, HEVC/H.265, ProRes, JPEG/MJPEG, and later custom codecs.
 
 ## Clean-Room Record
 
@@ -49,6 +50,7 @@ Rules:
 ```text
 docs/
   clean-room-logbook.md
+  receiver-bottleneck-notes.md
   retina-kvm-feasibility-memo.md
   software-only-retinarelay-research-addendum.md
   virtual-display-proof-notes.md
@@ -63,6 +65,8 @@ experiments/
     VirtualDisplayStreamProbe.m
   004-videotoolbox-hevc-encode/
     VirtualDisplayHEVCEncodeProbe.m
+  005-receiver-codec-capability/
+    ReceiverCodecCapabilityProbe.m
 
 results/
   002-screencapturekit-capture/
@@ -71,6 +75,8 @@ results/
     stream-probe-result.md
   004-videotoolbox-hevc-encode/
     hevc-encode-result.md
+  005-receiver-codec-capability/
+    receiver-codec-capability.md
 ```
 
 ## Build Probes
@@ -118,6 +124,16 @@ clang -fobjc-arc -framework AppKit -framework Foundation \
   VirtualDisplayHEVCEncodeProbe.m -o VirtualDisplayHEVCEncodeProbe
 ./VirtualDisplayHEVCEncodeProbe \
   --output=/Users/peterrichards/dev/MacRemoteKVM/results/004-videotoolbox-hevc-encode/hevc-encode-result.md
+```
+
+Receiver codec capability:
+
+```sh
+cd experiments/005-receiver-codec-capability
+clang -fobjc-arc -framework Foundation -framework CoreMedia \
+  -framework VideoToolbox \
+  ReceiverCodecCapabilityProbe.m -o ReceiverCodecCapabilityProbe
+./ReceiverCodecCapabilityProbe
 ```
 
 ## Distribution Assumption

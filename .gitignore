@@ -5,6 +5,7 @@ experiments/**/VirtualDisplayProbe
 experiments/**/VirtualDisplayCaptureProbe
 experiments/**/VirtualDisplayStreamProbe
 experiments/**/VirtualDisplayHEVCEncodeProbe
+experiments/**/ReceiverCodecCapabilityProbe
 experiments/**/*.dSYM/
 
 # Temporary outputs

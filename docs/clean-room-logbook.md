@@ -30,6 +30,24 @@ engineering RetinaRelay or any other proprietary product.
 | 2026-10-04 | OpenDisplay/OpenAirDisplay public docs | Prior-art architecture reference; no code copied. |
 | 2026-10-04 | TargetBridge public docs/repository | Prior-art architecture and license awareness; no code copied. |
 | 2026-10-04 | Google Patents records for Microsoft, Qualcomm, Avatron families | Patent landscape notes only; not legal advice. |
+| 2026-10-04 | Apple VideoToolbox docs and `VTIsHardwareDecodeSupported` | Receiver-side codec capability testing. |
+| 2026-10-04 | Intel HEVC/H.265 hardware support note | Public hardware context for older Intel receiver Macs. |
+
+## Architecture Note: Receiver Bottleneck
+
+Date: 2026-10-04
+
+The Host/Sender is expected to be the faster Mac. It can spend more CPU, GPU,
+and media-engine budget on virtual display creation, capture, and encoding.
+
+The Viewer/Receiver is expected to be the older 5K iMac or iMac Pro. Therefore,
+the critical codec decision should be driven by what the Viewer can decode and
+render at low latency. Sender-side encode speed is useful, but it is not the
+primary bottleneck.
+
+Artifact:
+
+- `docs/receiver-bottleneck-notes.md`
 
 ## Experiment 001: Create Software-Only 5K Virtual Display
 
@@ -284,12 +302,65 @@ Artifacts:
 - `experiments/004-videotoolbox-hevc-encode/VirtualDisplayHEVCEncodeProbe.m`
 - `results/004-videotoolbox-hevc-encode/hevc-encode-result.md`
 
+## Experiment 005: Receiver Codec Capability Probe
+
+Date: 2026-10-04
+
+Question: What hardware decode capabilities does the Viewer/Receiver Mac expose
+through VideoToolbox?
+
+Implementation:
+
+- Wrote `experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe.m`.
+- Uses public VideoToolbox APIs:
+  - `VTIsHardwareDecodeSupported`
+  - `VTCopyVideoEncoderList`
+- Records macOS version, hardware model, CPU brand, memory, hardware decode
+  support, and available VideoToolbox encoders.
+- No proprietary binaries or protocols inspected.
+
+Build command:
+
+```sh
+clang -fobjc-arc -framework Foundation -framework CoreMedia \
+  -framework VideoToolbox \
+  ReceiverCodecCapabilityProbe.m -o ReceiverCodecCapabilityProbe
+```
+
+Run command:
+
+```sh
+./ReceiverCodecCapabilityProbe \
+  --output=/Users/peterrichards/dev/MacRemoteKVM/results/005-receiver-codec-capability/receiver-codec-capability.md
+```
+
+Local sanity result:
+
+```text
+Hardware model: MacBookPro18,2
+CPU brand: Apple M1 Max
+H.264 hardware decode: yes
+HEVC/H.265 hardware decode: yes
+ProRes Proxy/LT/422/HQ hardware decode: yes
+JPEG hardware decode: yes
+AV1 hardware decode: no
+```
+
+Conclusion: Probe passed locally, but the local result is only a sanity check on
+the development Mac. The decisive result must come from running this same probe
+on the older iMac Viewer.
+
+Artifacts:
+
+- `docs/receiver-bottleneck-notes.md`
+- `experiments/005-receiver-codec-capability/ReceiverCodecCapabilityProbe.m`
+- `results/005-receiver-codec-capability/receiver-codec-capability.md`
+
 ## Next Experiment
 
-Experiment 005 should measure local decode/render and latency:
+Experiment 006 should measure receiver decode/render throughput:
 
-1. Feed HEVC output into a local VideoToolbox decoder.
-2. Render decoded frames locally.
-3. Measure encode-to-decode latency and throughput.
-4. Decide whether to keep HEVC as a baseline or pivot toward a custom Metal
-   texture path sooner.
+1. Run Experiment 005 on the actual older iMac Viewer first.
+2. Generate sample streams for supported candidate codecs.
+3. Decode and render those samples on the Viewer.
+4. Measure FPS, latency, dropped frames, and CPU/GPU/media-engine load.

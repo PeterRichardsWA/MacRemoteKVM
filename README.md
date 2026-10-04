@@ -89,3 +89,4 @@ clang -fobjc-arc -framework Foundation -framework CoreGraphics \
 
 These probes use private CoreGraphics virtual-display APIs. The working
 assumption is direct Developer ID distribution, not Mac App Store distribution.
+# MacRemoteKVM

@@ -150,6 +150,18 @@ Thermal state: nominal -> nominal for both candidates
 This moves the bottleneck from local receiver decode/render to transport,
 frame pacing, end-to-end latency, and real desktop visual quality.
 
+Experiment 010 packages the first local transport prototype:
+
+```sh
+cd experiments/010-loopback-transport-prototype
+./test.sh
+```
+
+It sends the validated H.264 3840x2160@60 and HEVC 3200x1800@60 compressed frame
+payloads through local TCP loopback before hardware decode/render. This is still
+a same-machine test, but it adds frame framing, sender pacing, receiver rebuild,
+and local sender-to-render latency measurement before the two-Mac network test.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

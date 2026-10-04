@@ -36,9 +36,11 @@ failures, and nominal thermal state:
 1. H.264 3840x2160 at 60 fps rendered at about 59.95 FPS.
 2. HEVC/H.265 3200x1800 at 60 fps rendered at about 59.94 FPS.
 
-The next technical gate is building the first local transport prototype around
-these stream shapes. H.264 4K60 is the detail-first candidate; HEVC 3200x1800@60
-is the lower-bandwidth candidate.
+Experiment 010 now packages the first local transport prototype. It sends the
+two validated compressed stream shapes through local TCP loopback before
+hardware decode/render, measuring frame pacing and sender-to-render latency.
+The local M1 Max smoke run passed for both candidates; the target iMac Pro
+result is the next decisive data point.
 
 ## Clean-Room Record
 
@@ -119,6 +121,13 @@ experiments/
     media/
       h264-3840x2160-60-high-3s.mp4
       hevc-3200x1800-60-main-3s.mp4
+  010-loopback-transport-prototype/
+    LoopbackTransportProbe
+    LoopbackTransportProbe.m
+    test.sh
+    media/
+      h264-3840x2160-60-high-3s.mp4
+      hevc-3200x1800-60-main-3s.mp4
 
 results/
   002-screencapturekit-capture/
@@ -137,6 +146,8 @@ results/
     decode-envelope-summary.md
   009-receiver-candidate-stress/
     candidate-stress-summary.md
+  010-loopback-transport-prototype/
+    loopback-transport-summary.md
 ```
 
 ## Build Probes
@@ -226,6 +237,20 @@ a shorter smoke pass, set `MACRKVM_STRESS_SECONDS`, for example:
 
 ```sh
 MACRKVM_STRESS_SECONDS=15 MACRKVM_FULLSCREEN=no ./test.sh
+```
+
+Loopback transport prototype:
+
+```sh
+cd experiments/010-loopback-transport-prototype
+./test.sh
+```
+
+By default Experiment 010 runs each candidate fullscreen for 30 seconds through
+local TCP loopback. For a quick smoke pass:
+
+```sh
+MACRKVM_TRANSPORT_SECONDS=5 MACRKVM_FULLSCREEN=no ./test.sh
 ```
 
 ## Distribution Assumption

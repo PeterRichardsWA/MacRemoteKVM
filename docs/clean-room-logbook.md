@@ -692,10 +692,70 @@ Artifacts:
 - `experiments/009-receiver-candidate-stress/media/`
 - `results/009-receiver-candidate-stress/`
 
+## Experiment 010: Loopback Transport Prototype
+
+Date: 2026-10-04
+
+Question: Can the first validated compressed stream shapes survive a software
+transport framing path before hardware decode/render, while maintaining 60 fps
+frame pacing and useful local latency?
+
+Candidate paths:
+
+- H.264 3840x2160 at 60 fps.
+- HEVC/H.265 3200x1800 at 60 fps.
+
+Implementation:
+
+- Added `experiments/010-loopback-transport-prototype/LoopbackTransportProbe.m`.
+- Added a self-contained `experiments/010-loopback-transport-prototype/media/`
+  directory containing the two required input streams.
+- Added `experiments/010-loopback-transport-prototype/test.sh`.
+- Sends one compressed sample payload per frame over local TCP loopback from a
+  sender thread to a receiver thread.
+- Rebuilds `CMSampleBuffer` objects on the receiver side, requires a hardware
+  VideoToolbox decoder, and renders through `CAMetalLayer` plus Core Image.
+- Records frame counts, loopback bitrate, decode/render throughput,
+  sender-to-receiver payload latency, and sender-to-rendered-frame latency.
+- Prototype limitations are recorded in the reports: decoder config is shared
+  in-process from the local asset format description, and the frame header is a
+  native-endian prototype. The next two-Mac transport test should serialize the
+  decoder config and use a network-stable header.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x264/x265 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./test.sh
+```
+
+Local smoke result:
+
+```text
+Machine: MacBookPro18,2, Apple M1 Max
+Run mode: windowed, 2 seconds per candidate, local TCP loopback
+H.264 3840x2160 @ 60: hardware session yes, 121 sent, 121 rendered, 60.07 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 121 sent, 121 rendered, 60.28 rendered FPS
+Decode errors: 0
+Render failures: 0
+Average sender-to-rendered-frame latency: 3.985 ms for H.264, 3.493 ms for HEVC
+```
+
+Conclusion: The Experiment 010 package works locally. The local smoke test used
+a smaller windowed drawable, so it is not the decisive receiver result. The
+target iMac Pro Viewer should run the default fullscreen 30-second test.
+
+Artifacts:
+
+- `experiments/010-loopback-transport-prototype/LoopbackTransportProbe`
+- `experiments/010-loopback-transport-prototype/LoopbackTransportProbe.m`
+- `experiments/010-loopback-transport-prototype/test.sh`
+- `experiments/010-loopback-transport-prototype/media/`
+- `results/010-loopback-transport-prototype/`
+
 ## Next Experiment
 
-Experiment 010 should build the first local sender-to-receiver transport
-prototype. It should use the now-validated receiver paths, starting with H.264
-3840x2160@60 and keeping HEVC 3200x1800@60 as the lower-bandwidth comparison
-path. The next measurement should include transport latency and frame pacing,
-not just local decode/render throughput.
+Run Experiment 010 on the target iMac Pro Viewer. If it passes, Experiment 011
+should split sender and receiver across two Macs and replace the in-process
+format-description sharing with serialized decoder configuration.

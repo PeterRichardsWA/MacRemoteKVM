@@ -61,10 +61,20 @@ Hardware decode support reported by VideoToolbox:
 
 ## Next Test
 
-Experiment 006 should generate 5K H.264 and HEVC/H.265 sample streams and run
-decode/render throughput tests on the iMac Pro Viewer. The test should measure
-FPS, frame drops, decode latency, display latency, CPU load, GPU load, and
-whether either hardware path can sustain an interactive remote-display workload.
+Experiment 006 packages the first H.264 baseline:
+
+```sh
+cd experiments/006-receiver-decode-render
+./run_h264_decode_render_probe.sh
+```
+
+It uses a checked-in 5120x2880/60 fps H.264 High Profile stream and requires a
+hardware VideoToolbox decoder before attempting Metal/Core Image rendering.
+
+The local M1 Max smoke run could not create a required-hardware decoder session
+for that 5K H.264 stream. The target iMac Pro run is still required, but if it
+reports the same failure, the next receiver throughput test should move directly
+to HEVC/H.265.
 
 ## Sources
 

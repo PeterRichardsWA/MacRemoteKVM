@@ -90,6 +90,29 @@ submits 5120x2880 IOSurface-backed buffers into VideoToolbox HEVC, and writes a
 Markdown/CSV report to
 `results/004-videotoolbox-hevc-encode/hevc-encode-result.md`.
 
+Run the receiver codec capability test:
+
+```sh
+cd 005-receiver-codec-capability
+./run_receiver_codec_capability.sh
+```
+
+Expected result: the probe writes VideoToolbox hardware decode capability and
+encoder availability to
+`results/005-receiver-codec-capability/receiver-codec-capability.md`.
+
+Run the H.264 receiver decode/render baseline:
+
+```sh
+cd 006-receiver-decode-render
+./run_h264_decode_render_probe.sh
+```
+
+Expected result: the probe opens a render window, requires a hardware
+VideoToolbox H.264 decoder for the checked-in 5120x2880/60 fps test stream,
+renders decoded frames through Metal/Core Image, and writes a report to
+`results/006-receiver-decode-render/h264-decode-render-result.md`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

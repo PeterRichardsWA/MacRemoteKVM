@@ -75,6 +75,12 @@ experiments/
     ReceiverCodecCapabilityProbe
     ReceiverCodecCapabilityProbe.m
     run_receiver_codec_capability.sh
+  006-receiver-decode-render/
+    ReceiverDecodeRenderProbe
+    ReceiverDecodeRenderProbe.m
+    run_h264_decode_render_probe.sh
+    media/
+      h264-5k60-high-3s.mp4
 
 results/
   002-screencapturekit-capture/
@@ -85,6 +91,8 @@ results/
     hevc-encode-result.md
   005-receiver-codec-capability/
     receiver-codec-capability.md
+  006-receiver-decode-render/
+    h264-decode-render-result.md
 ```
 
 ## Build Probes
@@ -139,6 +147,13 @@ Receiver codec capability:
 ```sh
 cd experiments/005-receiver-codec-capability
 ./run_receiver_codec_capability.sh
+```
+
+H.264 receiver decode/render baseline:
+
+```sh
+cd experiments/006-receiver-decode-render
+./run_h264_decode_render_probe.sh
 ```
 
 ## Distribution Assumption

@@ -32,6 +32,7 @@ engineering RetinaRelay or any other proprietary product.
 | 2026-10-04 | Google Patents records for Microsoft, Qualcomm, Avatron families | Patent landscape notes only; not legal advice. |
 | 2026-10-04 | Apple VideoToolbox docs and `VTIsHardwareDecodeSupported` | Receiver-side codec capability testing. |
 | 2026-10-04 | Intel HEVC/H.265 hardware support note | Public hardware context for older Intel receiver Macs. |
+| 2026-10-04 | FFmpeg/libx264 test pattern generation | Synthetic H.264 5K60 fixture generation only; no implementation code copied. |
 
 ## Architecture Note: Receiver Bottleneck
 
@@ -387,11 +388,64 @@ Artifacts:
 - `experiments/005-receiver-codec-capability/run_receiver_codec_capability.sh`
 - `results/005-receiver-codec-capability/receiver-codec-capability.md`
 
+## Experiment 006: H.264 Receiver Decode/Render Baseline
+
+Date: 2026-10-04
+
+Question: Can the Viewer/Receiver create a required-hardware VideoToolbox H.264
+decoder for a 5120x2880 60 fps stream, and if so can it decode and render that
+stream through the display path?
+
+Implementation:
+
+- Generated `experiments/006-receiver-decode-render/media/h264-5k60-high-3s.mp4`
+  from a synthetic `testsrc2` pattern using local FFmpeg/libx264 tooling.
+- The fixture is H.264/AVC High Profile, Level 6.2, 5120x2880, 60 fps, three
+  seconds, roughly 45 Mbps, with 180 encoded frames.
+- Wrote `experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe.m`.
+- Uses Apple APIs:
+  - `AVAssetReader` to read compressed H.264 samples from the MP4 fixture.
+  - `VTDecompressionSessionCreate` with
+    `kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder`.
+  - `CAMetalLayer` plus Core Image to render decoded `CVPixelBuffer` frames.
+- Packaged a signed universal `x86_64`/`arm64` binary for the iMac Pro.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x264 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./run_h264_decode_render_probe.sh
+```
+
+Local smoke result:
+
+```text
+Hardware model: MacBookPro18,2
+Input: H.264 High Profile Level 6.2, 5120x2880, 60 fps, 180 frames
+Required hardware decoder: yes
+Hardware-required session create status: -12911 (kVTVideoDecoderMalfunctionErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+```
+
+Conclusion: The local smoke run successfully exercised the test harness, but the
+M1 Max development Mac could not create a required-hardware H.264 decoder
+session for the 5K H.264 fixture. The decisive result still needs to come from
+the target iMac Pro Viewer. If the iMac Pro reports the same hardware-session
+failure, H.264 should be deprioritized for the first 5K transport path and the
+next test should move directly to HEVC/H.265 decode/render.
+
+Artifacts:
+
+- `experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe`
+- `experiments/006-receiver-decode-render/ReceiverDecodeRenderProbe.m`
+- `experiments/006-receiver-decode-render/run_h264_decode_render_probe.sh`
+- `experiments/006-receiver-decode-render/media/h264-5k60-high-3s.mp4`
+- `results/006-receiver-decode-render/h264-decode-render-result.md`
+
 ## Next Experiment
 
-Experiment 006 should measure receiver decode/render throughput:
-
-1. Generate 5K H.264 and HEVC/H.265 sample streams.
-2. Decode and render those samples on the iMac Pro Viewer.
-3. Measure FPS, latency, dropped frames, and CPU/GPU/media-engine load.
-4. Use the result to choose the first transport codec for the prototype.
+Run Experiment 006 on the target iMac Pro Viewer. If the iMac Pro also cannot
+create a required-hardware H.264 decoder session for this 5K stream, Experiment
+007 should test HEVC/H.265 receiver decode/render with the same benchmark
+structure.

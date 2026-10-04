@@ -581,8 +581,28 @@ development Mac. Each rendered all frames with no decode output errors or render
 failures.
 ```
 
-Conclusion: The ladder package works locally. The decisive result must come from
-the target iMac Pro Viewer.
+Conclusion: The ladder package works locally. The target iMac Pro result below
+is the decisive receiver-envelope result.
+
+Target Viewer result:
+
+```text
+H.264 2560x1440 @ 60: hardware session yes, 180 frames, 59.68 rendered FPS
+H.264 3840x2160 @ 60: hardware session yes, 180 frames, 59.38 rendered FPS
+HEVC 2560x1440 @ 60: hardware session yes, 180 frames, 59.72 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 180 frames, 58.71 rendered FPS
+HEVC 3840x2160 @ 60: hardware session yes, 180 frames, 42.67 rendered FPS
+HEVC 4096x2304 @ 60: hardware session yes, 180 frames, 37.54 rendered FPS
+HEVC 5120x2880 @ 30: hardware session no, -12907 (kVTCouldNotCreateInstanceErr)
+```
+
+Conclusion: Passed. The iMac Pro can hardware-decode and render substantial
+receiver streams. The strongest passing candidate so far is H.264 3840x2160 at
+60 fps, rendered at about 59.4 FPS into the 5120x2880 drawable. HEVC 3200x1800
+at 60 fps is also plausible at about 58.7 FPS and lower bitrate. HEVC at 3840x2160
+and 4096x2304 creates hardware sessions but does not sustain 60 FPS in this
+probe. HEVC 5120x2880 at 30 fps cannot create a required-hardware decoder
+session on this machine.
 
 Artifacts:
 
@@ -594,5 +614,7 @@ Artifacts:
 
 ## Next Experiment
 
-Run Experiment 008 on the target iMac Pro Viewer and identify the highest
-passing hardware-decode point.
+Experiment 009 should stress-test the first viable receiver candidates for
+longer duration, latency, thermals, and subjective quality. Candidate paths:
+H.264 3840x2160 at 60 fps scaled to the 5K display, and HEVC 3200x1800 at
+60 fps as a lower-bandwidth alternative.

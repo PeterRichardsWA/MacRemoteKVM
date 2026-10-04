@@ -23,16 +23,21 @@ and render path is therefore the more important bottleneck.
 ## Likely Codec Direction
 
 The 5K60 hardware-decode path failed for both H.264 and HEVC/H.265 on the target
-iMac Pro. Receiver-side tests should now focus on:
+iMac Pro, but the receiver envelope test found viable lower points:
 
-1. Finding the highest HEVC/H.265 resolution and frame rate that can create a
-   required-hardware decoder session.
-2. Measuring decode/render throughput at each passing point.
-3. Testing lower-resolution H.264 only if HEVC fails or if a fallback mode is
-   needed.
-4. Considering tiling, scaling, adaptive resolution, or a custom
-   desktop-oriented codec if single-stream hardware decode cannot satisfy the
-   product target.
+1. H.264 3840x2160 at 60 fps created a hardware session and rendered at about
+   59.4 FPS.
+2. HEVC/H.265 3200x1800 at 60 fps created a hardware session and rendered at
+   about 58.7 FPS.
+3. HEVC/H.265 3840x2160 and 4096x2304 created hardware sessions but did not
+   sustain 60 FPS.
+4. HEVC/H.265 5120x2880 at 30 fps still failed to create a required-hardware
+   decoder session.
+
+The first prototype receiver path should likely use H.264 4K60 scaled to the 5K
+display, with HEVC 3200x1800@60 as a lower-bandwidth alternative. If full 5K
+fidelity remains required, the next design path is tiling, adaptive resolution,
+or a custom desktop-oriented codec rather than a single 5K60 VideoToolbox stream.
 
 ## Public Hardware Context
 
@@ -115,6 +120,10 @@ cd experiments/008-receiver-decode-envelope
 
 It tests HEVC/H.265 at 5K30, 4096x2304@60, 3840x2160@60, 3200x1800@60, and
 2560x1440@60, plus H.264 fallback points at 3840x2160@60 and 2560x1440@60.
+
+The target iMac Pro result identified H.264 3840x2160@60 as the strongest
+passing candidate so far, with HEVC 3200x1800@60 as a plausible lower-bandwidth
+candidate.
 
 ## Sources
 

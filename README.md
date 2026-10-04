@@ -17,14 +17,20 @@ The first five technical gates have passed:
 5. The target iMac Pro Viewer exposes hardware decode support for H.264,
    HEVC/H.265, and HEVC-with-alpha through VideoToolbox.
 
-The next technical gate is receiver-side performance:
+The receiver decode envelope now has usable points on the target iMac Pro:
 
-1. H.264 5K60 hardware decode/render was tested first and failed to create a
-   required-hardware decoder session on the target iMac Pro.
-2. HEVC/H.265 5K60 was tested next and also failed to create a required-hardware
-   decoder session on the target iMac Pro.
-3. The next receiver test should map the hardware decode envelope with lower
-   resolutions and/or frame rates before returning to transport design.
+1. H.264 3840x2160 at 60 fps created a hardware decoder session and rendered at
+   about 59.4 FPS.
+2. HEVC/H.265 3200x1800 at 60 fps created a hardware decoder session and
+   rendered at about 58.7 FPS.
+3. HEVC/H.265 3840x2160 at 60 fps created a hardware decoder session but only
+   rendered at about 42.7 FPS.
+4. HEVC/H.265 5120x2880 at 30 fps still failed to create a required-hardware
+   decoder session.
+
+The next technical gate is choosing and stress-testing the first receiver
+transport candidate, likely H.264 4K60 scaled to the 5K display or HEVC
+3200x1800@60 for lower bandwidth.
 
 ## Clean-Room Record
 

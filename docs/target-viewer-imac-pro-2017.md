@@ -72,3 +72,22 @@ Fallback session create status without hardware requirement: 0 (noErr)
 This rules out 5K60 HEVC as the first hardware-decode transport path. The next
 receiver test should map the lower-resolution and lower-frame-rate hardware
 decode envelope.
+
+## Experiment 008 Decode Envelope Result
+
+The receiver decode envelope ladder was run on this machine.
+
+Summary:
+
+- H.264 2560x1440 at 60 fps: hardware session yes, 59.68 rendered FPS.
+- H.264 3840x2160 at 60 fps: hardware session yes, 59.38 rendered FPS.
+- HEVC 2560x1440 at 60 fps: hardware session yes, 59.72 rendered FPS.
+- HEVC 3200x1800 at 60 fps: hardware session yes, 58.71 rendered FPS.
+- HEVC 3840x2160 at 60 fps: hardware session yes, 42.67 rendered FPS.
+- HEVC 4096x2304 at 60 fps: hardware session yes, 37.54 rendered FPS.
+- HEVC 5120x2880 at 30 fps: hardware session no,
+  `kVTCouldNotCreateInstanceErr`.
+
+The first viable receiver prototype path should use H.264 3840x2160 at 60 fps
+scaled to the 5K display, or HEVC 3200x1800 at 60 fps if lower bandwidth matters
+more than spatial detail.

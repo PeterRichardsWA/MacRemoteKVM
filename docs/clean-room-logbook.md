@@ -779,7 +779,73 @@ Artifacts:
 - `experiments/010-loopback-transport-prototype/media/`
 - `experiments/010-loopback-transport-prototype/results/`
 
+## Experiment 011: Two-Mac Transport
+
+Date: 2026-10-04
+
+Question: Can the validated compressed stream shapes be sent from one Mac to
+another over TCP with serialized decoder configuration, then hardware-decoded
+and rendered on the receiver?
+
+Candidate paths:
+
+- H.264 3840x2160 at 60 fps.
+- HEVC/H.265 3200x1800 at 60 fps.
+
+Implementation:
+
+- Added `experiments/011-two-mac-transport/TwoMacTransportProbe.m`.
+- Added a self-contained `experiments/011-two-mac-transport/media/` directory
+  containing the two required input streams.
+- Added `experiments/011-two-mac-transport/test.sh`.
+- Added separate `receiver`, `sender`, and `loopback` modes.
+- Uses TCP with big-endian network headers.
+- Serializes H.264/HEVC parameter sets and NAL unit header length before frame
+  payloads. The receiver rebuilds the `CMFormatDescription` from those parameter
+  sets.
+- Sends one compressed sample payload per frame.
+- The receiver requires a hardware VideoToolbox decoder and renders through
+  `CAMetalLayer` plus Core Image.
+- Receiver reports avoid claiming one-way sender-to-render latency because
+  two-Mac clocks are not synchronized. They record receiver-side
+  receive-complete-to-render latency and frame interarrival timing.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x264/x265 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./test.sh receiver
+./test.sh sender <receiver-host-or-ip>
+```
+
+Local smoke result:
+
+```text
+Machine: MacBookPro18,2, Apple M1 Max
+Run mode: local loopback, windowed, 2 seconds per candidate
+H.264 3840x2160 @ 60: 121 sent, 121 received, 121 rendered, 63.26 rendered FPS
+HEVC 3200x1800 @ 60: 121 sent, 121 received, 121 rendered, 60.42 rendered FPS
+Decode errors: 0
+Render failures: 0
+Serialized parameter sets: 2 for H.264, 4 for HEVC
+```
+
+Conclusion: The Experiment 011 package works locally. The smoke test proves the
+serialized decoder configuration path and TCP framing path. The decisive result
+must come from the fast-Mac sender to iMac Pro receiver run.
+
+Artifacts:
+
+- `experiments/011-two-mac-transport/TwoMacTransportProbe`
+- `experiments/011-two-mac-transport/TwoMacTransportProbe.m`
+- `experiments/011-two-mac-transport/test.sh`
+- `experiments/011-two-mac-transport/media/`
+- `experiments/011-two-mac-transport/results/`
+
 ## Next Experiment
 
-Experiment 011 should split sender and receiver across two Macs and replace the
-in-process format-description sharing with serialized decoder configuration.
+Run Experiment 011 across the two Macs. Start `./test.sh receiver` on the iMac
+Pro first, then run `./test.sh sender <receiver-host-or-ip>` on the sender Mac.
+If it passes, the next gate is replacing prerecorded compressed fixtures with
+live sender capture/encode.

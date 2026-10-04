@@ -166,6 +166,26 @@ decoder, renders through Metal/Core Image, and writes reports plus a summary to
 fullscreen for 30 seconds. For a quick smoke run, set
 `MACRKVM_TRANSPORT_SECONDS=5 MACRKVM_FULLSCREEN=no`.
 
+Run the two-Mac transport test:
+
+```sh
+cd 011-two-mac-transport
+./test.sh receiver
+```
+
+Then, on the sender Mac:
+
+```sh
+cd 011-two-mac-transport
+./test.sh sender <receiver-host-or-ip>
+```
+
+Expected result: the sender sends the H.264 3840x2160@60 and HEVC/H.265
+3200x1800@60 compressed frame payloads over TCP to the receiver. The protocol
+uses big-endian network headers and serialized H.264/HEVC parameter sets, so the
+receiver rebuilds the decoder configuration instead of sharing it in-process.
+Results are written under `011-two-mac-transport/results/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

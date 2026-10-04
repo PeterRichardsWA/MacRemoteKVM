@@ -46,8 +46,11 @@ decode/render, measuring frame pacing and sender-to-render latency:
    about 59.89 FPS.
 3. Both candidates had zero decode errors and zero render failures.
 
-The next technical gate is the first real two-Mac transport run with serialized
-decoder configuration and real network behavior.
+Experiment 011 now packages the first real two-Mac transport test. It has
+separate receiver and sender modes, uses big-endian network headers, serializes
+H.264/HEVC decoder parameter sets, and writes results under the experiment
+directory. The local loopback smoke run passed; the next decisive result is the
+actual fast-Mac-to-iMac-Pro network run.
 
 ## Clean-Room Record
 
@@ -137,6 +140,16 @@ experiments/
       hevc-3200x1800-60-main-3s.mp4
     results/
       loopback-transport-summary.md
+  011-two-mac-transport/
+    TwoMacTransportProbe
+    TwoMacTransportProbe.m
+    test.sh
+    media/
+      h264-3840x2160-60-high-3s.mp4
+      hevc-3200x1800-60-main-3s.mp4
+    results/
+      loopback-receiver/
+      loopback-sender/
 
 results/
   002-screencapturekit-capture/
@@ -260,6 +273,24 @@ local TCP loopback and writes results under
 ```sh
 MACRKVM_TRANSPORT_SECONDS=5 MACRKVM_FULLSCREEN=no ./test.sh
 ```
+
+Two-Mac transport:
+
+On the iMac Pro receiver:
+
+```sh
+cd experiments/011-two-mac-transport
+./test.sh receiver
+```
+
+On the sender Mac:
+
+```sh
+cd experiments/011-two-mac-transport
+./test.sh sender <receiver-host-or-ip>
+```
+
+Results are written under `experiments/011-two-mac-transport/results/`.
 
 ## Distribution Assumption
 

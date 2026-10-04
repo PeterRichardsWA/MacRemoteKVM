@@ -175,6 +175,25 @@ Average sender-to-rendered-frame latency: about 49-51 ms
 This moves the next bottleneck to a real two-Mac transport run with serialized
 decoder configuration and network behavior.
 
+Experiment 011 packages that two-Mac transport run:
+
+```sh
+cd experiments/011-two-mac-transport
+./test.sh receiver
+```
+
+Then on the sender Mac:
+
+```sh
+cd experiments/011-two-mac-transport
+./test.sh sender <receiver-host-or-ip>
+```
+
+The receiver rebuilds H.264/HEVC decoder configuration from serialized
+parameter sets and records receiver-side frame pacing and receive-to-render
+latency. If this passes, the remaining major video-path gap is live
+ScreenCaptureKit capture and live encode feeding the network sender.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

@@ -24,3 +24,20 @@ Receiver tests should prioritize:
 2. Actual 5K decode/render throughput.
 3. End-to-end latency once frames are received.
 4. Sustained thermals and CPU/GPU/media-engine load.
+
+## Experiment 005 Observed Capability
+
+The receiver codec capability probe was run on this machine.
+
+Hardware decode support reported by VideoToolbox:
+
+- H.264 / AVC: yes.
+- HEVC / H.265: yes.
+- HEVC with Alpha: yes.
+- Apple ProRes 422 Proxy/LT/422/HQ: no.
+- JPEG: no.
+- AV1: no.
+
+The next receiver test should measure actual 5K decode/render throughput for
+H.264 and HEVC/H.265. ProRes, JPEG/MJPEG, AV1, and custom codecs remain fallback
+paths, not the first path.

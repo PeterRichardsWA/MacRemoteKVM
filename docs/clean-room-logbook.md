@@ -354,8 +354,29 @@ AV1 hardware decode: no
 ```
 
 Conclusion: Probe passed locally, but the local result is only a sanity check on
-the development Mac. The decisive result must come from running this same probe
-on the older iMac Viewer.
+the development Mac. The target Viewer result below is the decisive codec
+capability result.
+
+Target Viewer result:
+
+```text
+Hardware model: iMacPro1,1
+CPU brand: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+GPU: Radeon Pro Vega 64, 16 GB VRAM
+Built-in display: Retina 5K (5120 x 2880)
+H.264 hardware decode: yes
+HEVC/H.265 hardware decode: yes
+HEVC with Alpha hardware decode: yes
+ProRes Proxy/LT/422/HQ hardware decode: no
+JPEG hardware decode: no
+AV1 hardware decode: no
+```
+
+Conclusion: Passed. The target iMac Pro reports hardware decode support for
+H.264 and HEVC/H.265, including HEVC with alpha. It does not report hardware
+decode support for ProRes 422 variants, JPEG, or AV1 through
+`VTIsHardwareDecodeSupported`. Experiment 006 should therefore measure actual
+5K receiver decode/render throughput for H.264 and HEVC first.
 
 Artifacts:
 
@@ -370,7 +391,7 @@ Artifacts:
 
 Experiment 006 should measure receiver decode/render throughput:
 
-1. Run Experiment 005 on the actual older iMac Viewer first.
-2. Generate sample streams for supported candidate codecs.
-3. Decode and render those samples on the Viewer.
-4. Measure FPS, latency, dropped frames, and CPU/GPU/media-engine load.
+1. Generate 5K H.264 and HEVC/H.265 sample streams.
+2. Decode and render those samples on the iMac Pro Viewer.
+3. Measure FPS, latency, dropped frames, and CPU/GPU/media-engine load.
+4. Use the result to choose the first transport codec for the prototype.

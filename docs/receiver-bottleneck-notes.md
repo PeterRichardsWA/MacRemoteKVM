@@ -18,17 +18,17 @@ and render path is therefore the more important bottleneck.
   ProRes, JPEG, or a custom codec is realistic.
 - Older Intel iMac hardware varies materially by year and CPU/GPU generation.
 - HEVC/H.265 is especially model-sensitive on Intel Macs.
-- We need to test on the actual target iMac before choosing a codec strategy.
+- We tested the actual target iMac Pro before choosing a codec strategy.
 
 ## Likely Codec Direction
 
-Initial receiver-side tests should focus on:
+Initial receiver-side throughput tests should focus on:
 
-1. H.264 hardware decode support and 5K decode throughput.
-2. HEVC/H.265 hardware decode support and 5K decode throughput.
-3. ProRes Proxy/LT hardware decode support and bandwidth cost.
-4. JPEG/MJPEG-style decode throughput and bandwidth cost.
-5. A custom desktop-oriented codec if standard video codecs miss latency or FPS.
+1. H.264 5K decode/render throughput.
+2. HEVC/H.265 5K decode/render throughput.
+3. HEVC-with-alpha only if a later rendering design needs alpha composition.
+4. ProRes, JPEG/MJPEG, AV1, or a custom desktop-oriented codec only if H.264
+   and HEVC miss latency or FPS targets.
 
 ## Public Hardware Context
 
@@ -38,25 +38,33 @@ Apple's WWDC 2017 HEVC materials distinguish 8-bit and 10-bit HEVC hardware
 decode support by Intel generation. VideoToolbox exposes
 `VTIsHardwareDecodeSupported` so we can directly query the actual receiver Mac.
 
-## Next Test
+## Actual iMac Pro Result
 
-Run the packaged receiver-side capability probe on the old iMac:
+Experiment 005 was run on the target Viewer:
 
-```sh
-cd experiments/005-receiver-codec-capability
-./run_receiver_codec_capability.sh
+```text
+Hardware model: iMacPro1,1
+CPU: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+GPU: Radeon Pro Vega 64, 16 GB VRAM
+macOS: Version 15.8 (Build 24H23)
+Built-in display: Retina 5K (5120 x 2880)
 ```
 
-The probe records:
+Hardware decode support reported by VideoToolbox:
 
-- Mac model, CPU, GPU, macOS version.
-- Hardware decode support for H.264, HEVC/H.265, ProRes, JPEG, and AV1.
-- Available VideoToolbox encoders for comparison.
-- Whether the target machine can plausibly decode the candidate stream in
-  hardware.
+- H.264 / AVC: yes.
+- HEVC / H.265: yes.
+- HEVC with Alpha: yes.
+- Apple ProRes 422 Proxy/LT/422/HQ: no.
+- JPEG: no.
+- AV1: no.
 
-After that, generate codec-specific sample streams and run decode/render
-throughput tests on the receiver.
+## Next Test
+
+Experiment 006 should generate 5K H.264 and HEVC/H.265 sample streams and run
+decode/render throughput tests on the iMac Pro Viewer. The test should measure
+FPS, frame drops, decode latency, display latency, CPU load, GPU load, and
+whether either hardware path can sustain an interactive remote-display workload.
 
 ## Sources
 

@@ -2,35 +2,43 @@
 
 ## Machine
 
-- Host name: peters-macbook-pro.local
-- macOS: Version 26.6.2 (Build 25G83)
-- Hardware model: MacBookPro18,2
-- CPU brand: Apple M1 Max
-- Processor count: 10
-- Active processor count: 10
-- Physical memory: 64.00 GB
+- Host name: dadimacpro.local
+- macOS: Version 15.8 (Build 24H23)
+- Hardware model: iMacPro1,1
+- CPU brand: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+- Processor count: 36
+- Active processor count: 36
+- Physical memory: 128.00 GB
 
 ## Display Hardware
 
 ```text
 Graphics/Displays:
 
-    Apple M1 Max:
+    Radeon Pro Vega 64:
 
-      Chipset Model: Apple M1 Max
+      Chipset Model: Radeon Pro Vega 64
       Type: GPU
-      Bus: Built-In
-      Total Number of Cores: 32
-      Vendor: Apple (0x106b)
-      Metal Support: Metal 4
+      Bus: PCIe
+      PCIe Lane Width: x16
+      VRAM (Total): 16 GB
+      Vendor: AMD (0x1002)
+      Device ID: 0x6860
+      Revision ID: 0x0000
+      ROM Revision: 113-D0500D-114
+      VBIOS Version: 113-D05001A1XT-018
+      Option ROM Version: 113-D05001A1XT-018
+      EFI Driver Version: 01.01.114
+      Metal Support: Metal 3
       Displays:
-        Color LCD:
-          Display Type: Built-in Liquid Retina XDR Display
-          Resolution: 3456 x 2234 Retina
+        iMac:
+          Display Type: Built-In Retina LCD
+          Resolution: Retina 5K (5120 x 2880)
+          Framebuffer Depth: 30-Bit Color (ARGB2101010)
           Main Display: Yes
           Mirror: Off
           Online: Yes
-          Automatically Adjust Brightness: No
+          Automatically Adjust Brightness: Yes
           Connection Type: Internal
 
 ```
@@ -42,11 +50,11 @@ Graphics/Displays:
 | H.264 / AVC | `avc1` | yes |
 | HEVC / H.265 | `hvc1` | yes |
 | HEVC with Alpha | `muxa` | yes |
-| Apple ProRes 422 Proxy | `apco` | yes |
-| Apple ProRes 422 LT | `apcs` | yes |
-| Apple ProRes 422 | `apcn` | yes |
-| Apple ProRes 422 HQ | `apch` | yes |
-| JPEG | `jpeg` | yes |
+| Apple ProRes 422 Proxy | `apco` | no |
+| Apple ProRes 422 LT | `apcs` | no |
+| Apple ProRes 422 | `apcn` | no |
+| Apple ProRes 422 HQ | `apch` | no |
+| JPEG | `jpeg` | no |
 | AV1 | `av01` | no |
 
 ## Available VideoToolbox Encoders
@@ -61,23 +69,15 @@ Graphics/Displays:
 | apco | `apco` | Apple ProRes 422 Proxy | no |
 | ap4h | `ap4h` | Apple ProRes 4444 | no |
 | ap4x | `ap4x` | Apple ProRes 4444 XQ | no |
-| apcn | `apcn` | AppleProResHW 422 | yes |
-| apch | `apch` | AppleProResHW 422 HQ | yes |
-| apcs | `apcs` | AppleProResHW 422 LT | yes |
-| apco | `apco` | AppleProResHW 422 Proxy | yes |
-| ap4h | `ap4h` | AppleProResHW 4444 | yes |
-| ap4x | `ap4x` | AppleProResHW 4444 XQ | yes |
-| deph | `deph` | Apple Depth (HEVC)-Apple HEVC (HW) | yes |
 | deph | `deph` | Apple Depth (HEVC)-Apple HEVC (SW) | no |
-| dish | `dish` | Apple Disparity (HEVC)-Apple HEVC (HW) | yes |
 | dish | `dish` | Apple Disparity (HEVC)-Apple HEVC (SW) | no |
 | h263 | `h263` | Apple H.263 (SW) | no |
 | avc1 | `avc1` | Apple H.264 (HW) | yes |
 | avc1 | `avc1` | Apple H.264 (SW) | no |
+| hvc1 | `hvc1` | Apple HEVC (AVE) | yes |
 | hvc1 | `hvc1` | Apple HEVC (HW) | yes |
 | hvc1 | `hvc1` | Apple HEVC (SW) | no |
 | jpeg | `jpeg` | Apple JPEG | no |
-| jpeg | `jpeg` | JPEG (HW) | yes |
 | muxa | `muxa` | Apple Muxed Alpha-Apple HEVC (HW) | yes |
 | muxa | `muxa` | Apple Muxed Alpha-Apple HEVC (SW) | no |
 

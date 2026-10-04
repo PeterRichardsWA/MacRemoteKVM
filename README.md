@@ -4,7 +4,7 @@ Software-only macOS remote display/KVM feasibility project.
 
 ## Current Status
 
-The first four technical gates have passed:
+The first five technical gates have passed:
 
 1. macOS accepted a software-only virtual 5K display with no physical monitor,
    dummy adapter, or custom hardware.
@@ -14,13 +14,18 @@ The first four technical gates have passed:
    from an animated virtual display.
 4. Live 5120x2880 frames were accepted by a local VideoToolbox HEVC encoder
    with zero encode errors or dropped frames in the short probe.
+5. The target iMac Pro Viewer exposes hardware decode support for H.264,
+   HEVC/H.265, and HEVC-with-alpha through VideoToolbox.
 
 The next technical gate is receiver-side performance:
 
-1. Run receiver codec capability checks on the older iMac Viewer.
-2. Measure decode/render latency on the Viewer, not only encode speed on the
-   faster Host.
-3. Compare H.264, HEVC/H.265, ProRes, JPEG/MJPEG, and later custom codecs.
+1. Measure H.264 and HEVC/H.265 decode/render latency on the Viewer, not only
+   encode speed on the faster Host.
+2. Compare 5K throughput, dropped frames, CPU/GPU/media-engine load, and
+   latency between H.264 and HEVC/H.265.
+3. Revisit ProRes, JPEG/MJPEG, AV1, or custom codecs only after the hardware
+   decode path is measured; the target iMac Pro did not report hardware decode
+   support for ProRes, JPEG, or AV1.
 
 ## Clean-Room Record
 

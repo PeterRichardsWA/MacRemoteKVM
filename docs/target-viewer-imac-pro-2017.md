@@ -56,3 +56,19 @@ Fallback session create status without hardware requirement: 0 (noErr)
 
 This rules out 5K H.264 as the first hardware-decode transport path. The next
 receiver test should use HEVC/H.265.
+
+## Experiment 007 HEVC Result
+
+The HEVC receiver decode/render probe was run on this machine with a
+5120x2880/60 fps HEVC Main Profile test stream.
+
+VideoToolbox could not create a required-hardware HEVC decoder session:
+
+```text
+Hardware-required session create status: -12907 (kVTCouldNotCreateInstanceErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+```
+
+This rules out 5K60 HEVC as the first hardware-decode transport path. The next
+receiver test should map the lower-resolution and lower-frame-rate hardware
+decode envelope.

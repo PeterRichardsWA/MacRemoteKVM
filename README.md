@@ -21,11 +21,10 @@ The next technical gate is receiver-side performance:
 
 1. H.264 5K60 hardware decode/render was tested first and failed to create a
    required-hardware decoder session on the target iMac Pro.
-2. Experiment 007 packages the HEVC/H.265 5K60 decode/render test for the
-   Viewer.
-3. Revisit lower-resolution H.264, ProRes, JPEG/MJPEG, AV1, or custom codecs
-   only after the HEVC path is measured; the target iMac Pro did not report
-   hardware decode support for ProRes, JPEG, or AV1.
+2. HEVC/H.265 5K60 was tested next and also failed to create a required-hardware
+   decoder session on the target iMac Pro.
+3. The next receiver test should map the hardware decode envelope with lower
+   resolutions and/or frame rates before returning to transport design.
 
 ## Clean-Room Record
 

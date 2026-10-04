@@ -22,13 +22,17 @@ and render path is therefore the more important bottleneck.
 
 ## Likely Codec Direction
 
-Initial receiver-side throughput tests should focus on:
+The 5K60 hardware-decode path failed for both H.264 and HEVC/H.265 on the target
+iMac Pro. Receiver-side tests should now focus on:
 
-1. HEVC/H.265 5K decode/render throughput.
-2. Lower-resolution H.264 only if HEVC fails or if a fallback mode is needed.
-3. HEVC-with-alpha only if a later rendering design needs alpha composition.
-4. ProRes, JPEG/MJPEG, AV1, or a custom desktop-oriented codec only if H.264
-   and HEVC miss latency or FPS targets.
+1. Finding the highest HEVC/H.265 resolution and frame rate that can create a
+   required-hardware decoder session.
+2. Measuring decode/render throughput at each passing point.
+3. Testing lower-resolution H.264 only if HEVC fails or if a fallback mode is
+   needed.
+4. Considering tiling, scaling, adaptive resolution, or a custom
+   desktop-oriented codec if single-stream hardware decode cannot satisfy the
+   product target.
 
 ## Public Hardware Context
 
@@ -90,8 +94,17 @@ cd experiments/007-receiver-hevc-decode-render
 ```
 
 The local M1 Max smoke run created a required-hardware HEVC decoder session and
-rendered all 180 frames at roughly 119 FPS. The target iMac Pro run is still the
-decisive receiver result.
+rendered all 180 frames at roughly 119 FPS. The target iMac Pro run could not
+create a required-hardware decoder session for the same 5K60 stream:
+
+```text
+Hardware-required session create status: -12907 (kVTCouldNotCreateInstanceErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+```
+
+That means neither 5K60 H.264 nor 5K60 HEVC is viable as the first receiver
+transport path on this iMac Pro. The next receiver test should map the practical
+hardware decode envelope by lowering resolution and/or frame rate.
 
 ## Sources
 

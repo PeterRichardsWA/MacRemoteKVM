@@ -512,6 +512,26 @@ Realtime multiple vs 60.00 FPS input: 1.99x
 Conclusion: The local smoke run passed on the development Mac. The decisive
 result still needs to come from the target iMac Pro Viewer.
 
+Target Viewer result:
+
+```text
+Hardware model: iMacPro1,1
+CPU brand: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+Input: HEVC/H.265 Main Profile, 5120x2880, 60 fps, 180 frames
+Required hardware decoder: yes
+Hardware-required session create status: -12907 (kVTCouldNotCreateInstanceErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+Drawable size: 5120 x 2880
+Rendered frames: 0
+```
+
+Conclusion: Failed as a 5K60 HEVC hardware receiver path. The target iMac Pro
+could not create a required-hardware VideoToolbox decoder session for the
+5120x2880/60 fps HEVC test stream. Since software fallback is available but
+does not satisfy the low-latency hardware-decode requirement, the next test
+should map the receiver's practical hardware decode envelope across lower
+resolutions and frame rates.
+
 Artifacts:
 
 - `experiments/007-receiver-hevc-decode-render/ReceiverHEVCDecodeRenderProbe`
@@ -522,5 +542,7 @@ Artifacts:
 
 ## Next Experiment
 
-Run Experiment 007 on the target iMac Pro Viewer and compare against the failed
-5K H.264 hardware-decode result from Experiment 006.
+Experiment 008 should run a receiver decode/render ladder to find the iMac Pro's
+hardware-decode boundary. Candidate fixtures should include HEVC 5120x2880 at
+30 fps, HEVC 4096x2304 at 60 fps, HEVC 3840x2160 at 60 fps, and matching H.264
+fallback points where useful.

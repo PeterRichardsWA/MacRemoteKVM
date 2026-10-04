@@ -110,6 +110,9 @@ static NSString *cmTimeString(CMTime time) {
 static NSString *vtStatusName(OSStatus status) {
     switch (status) {
         case noErr: return @"noErr";
+        case kVTCouldNotFindVideoDecoderErr: return @"kVTCouldNotFindVideoDecoderErr";
+        case kVTCouldNotCreateInstanceErr: return @"kVTCouldNotCreateInstanceErr";
+        case kVTCouldNotFindVideoEncoderErr: return @"kVTCouldNotFindVideoEncoderErr";
         case kVTVideoDecoderBadDataErr: return @"kVTVideoDecoderBadDataErr";
         case kVTVideoDecoderUnsupportedDataFormatErr: return @"kVTVideoDecoderUnsupportedDataFormatErr";
         case kVTVideoDecoderMalfunctionErr: return @"kVTVideoDecoderMalfunctionErr";

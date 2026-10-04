@@ -41,3 +41,18 @@ Hardware decode support reported by VideoToolbox:
 The next receiver test should measure actual 5K decode/render throughput for
 H.264 and HEVC/H.265. ProRes, JPEG/MJPEG, AV1, and custom codecs remain fallback
 paths, not the first path.
+
+## Experiment 006 H.264 Result
+
+The H.264 receiver decode/render probe was run on this machine with a
+5120x2880/60 fps H.264 High Profile test stream.
+
+VideoToolbox could not create a required-hardware H.264 decoder session:
+
+```text
+Hardware-required session create status: -12913 (kVTVideoDecoderNotAvailableNowErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+```
+
+This rules out 5K H.264 as the first hardware-decode transport path. The next
+receiver test should use HEVC/H.265.

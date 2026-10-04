@@ -24,8 +24,8 @@ and render path is therefore the more important bottleneck.
 
 Initial receiver-side throughput tests should focus on:
 
-1. H.264 5K decode/render throughput.
-2. HEVC/H.265 5K decode/render throughput.
+1. HEVC/H.265 5K decode/render throughput.
+2. Lower-resolution H.264 only if HEVC fails or if a fallback mode is needed.
 3. HEVC-with-alpha only if a later rendering design needs alpha composition.
 4. ProRes, JPEG/MJPEG, AV1, or a custom desktop-oriented codec only if H.264
    and HEVC miss latency or FPS targets.
@@ -61,7 +61,7 @@ Hardware decode support reported by VideoToolbox:
 
 ## Next Test
 
-Experiment 006 packages the first H.264 baseline:
+Experiment 006 tested the first H.264 baseline:
 
 ```sh
 cd experiments/006-receiver-decode-render
@@ -71,10 +71,16 @@ cd experiments/006-receiver-decode-render
 It uses a checked-in 5120x2880/60 fps H.264 High Profile stream and requires a
 hardware VideoToolbox decoder before attempting Metal/Core Image rendering.
 
-The local M1 Max smoke run could not create a required-hardware decoder session
-for that 5K H.264 stream. The target iMac Pro run is still required, but if it
-reports the same failure, the next receiver throughput test should move directly
-to HEVC/H.265.
+The target iMac Pro could not create the required-hardware decoder session for
+that 5K H.264 stream:
+
+```text
+Hardware-required session create status: -12913 (kVTVideoDecoderNotAvailableNowErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+```
+
+That means 5K H.264 should not be the first transport path. The next receiver
+throughput test should move directly to HEVC/H.265.
 
 ## Sources
 

@@ -430,10 +430,28 @@ Fallback session create status without hardware requirement: 0 (noErr)
 
 Conclusion: The local smoke run successfully exercised the test harness, but the
 M1 Max development Mac could not create a required-hardware H.264 decoder
-session for the 5K H.264 fixture. The decisive result still needs to come from
-the target iMac Pro Viewer. If the iMac Pro reports the same hardware-session
-failure, H.264 should be deprioritized for the first 5K transport path and the
-next test should move directly to HEVC/H.265 decode/render.
+session for the 5K H.264 fixture. The target iMac Pro result below is the
+decisive H.264 receiver result.
+
+Target Viewer result:
+
+```text
+Hardware model: iMacPro1,1
+CPU brand: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+Input: H.264 High Profile Level 6.2, 5120x2880, 60 fps, 180 frames
+Required hardware decoder: yes
+Hardware-required session create status: -12913 (kVTVideoDecoderNotAvailableNowErr)
+Fallback session create status without hardware requirement: 0 (noErr)
+Drawable size: 5120 x 2880
+Rendered frames: 0
+```
+
+Conclusion: Failed as a 5K H.264 hardware receiver path. The target iMac Pro
+could not create a required-hardware VideoToolbox decoder session for the
+5120x2880/60 fps H.264 test stream. Since software fallback is available but
+does not satisfy the low-latency hardware-decode requirement, H.264 should not
+be the first transport codec for the 5K prototype. Experiment 007 should test
+HEVC/H.265 receiver decode/render using the same benchmark structure.
 
 Artifacts:
 
@@ -445,7 +463,6 @@ Artifacts:
 
 ## Next Experiment
 
-Run Experiment 006 on the target iMac Pro Viewer. If the iMac Pro also cannot
-create a required-hardware H.264 decoder session for this 5K stream, Experiment
-007 should test HEVC/H.265 receiver decode/render with the same benchmark
-structure.
+Experiment 007 should test HEVC/H.265 receiver decode/render with the same
+benchmark structure, using a 5120x2880/60 fps HEVC fixture and a required
+hardware VideoToolbox decoder session.

@@ -2,16 +2,16 @@
 
 ## Machine
 
-- Host name: peters-macbook-pro.local
-- macOS: Version 26.6.2 (Build 25G83)
-- Hardware model: MacBookPro18,2
-- CPU brand: Apple M1 Max
-- Processor count: 10
-- Physical memory: 64.00 GB
+- Host name: dadimacpro.local
+- macOS: Version 15.8 (Build 24H23)
+- Hardware model: iMacPro1,1
+- CPU brand: Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+- Processor count: 36
+- Physical memory: 128.00 GB
 
 ## Input Stream
 
-- Path: `/Users/peterrichards/dev/MacRemoteKVM/experiments/006-receiver-decode-render/media/h264-5k60-high-3s.mp4`
+- Path: `/Users/peterrichards/+++ macrkvm/006-receiver-decode-render/media/h264-5k60-high-3s.mp4`
 - File size: 16.08 MB
 - Codec FourCC: `avc1`
 - Format dimensions: 5120 x 2880
@@ -24,7 +24,7 @@
 ## Decoder Setup
 
 - Required hardware decoder: yes
-- Hardware-required session create status: -12911 (kVTVideoDecoderMalfunctionErr)
+- Hardware-required session create status: -12913 (kVTVideoDecoderNotAvailableNowErr)
 - Fallback session create status without hardware requirement: 0 (noErr)
 - Session note: hardware-required VideoToolbox session could not be created
 
@@ -32,7 +32,7 @@
 
 - Renderer: Metal CAMetalLayer with Core Image CVPixelBuffer render
 - Window backing scale: 2.00
-- Drawable size: 2560 x 1440
+- Drawable size: 5120 x 2880
 
 ## Decode/Render Result
 

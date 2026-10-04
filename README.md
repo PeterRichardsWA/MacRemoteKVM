@@ -19,13 +19,12 @@ The first five technical gates have passed:
 
 The next technical gate is receiver-side performance:
 
-1. Measure H.264 and HEVC/H.265 decode/render latency on the Viewer, not only
-   encode speed on the faster Host.
-2. Compare 5K throughput, dropped frames, CPU/GPU/media-engine load, and
-   latency between H.264 and HEVC/H.265.
-3. Revisit ProRes, JPEG/MJPEG, AV1, or custom codecs only after the hardware
-   decode path is measured; the target iMac Pro did not report hardware decode
-   support for ProRes, JPEG, or AV1.
+1. H.264 5K60 hardware decode/render was tested first and failed to create a
+   required-hardware decoder session on the target iMac Pro.
+2. Measure HEVC/H.265 5K60 decode/render latency on the Viewer next.
+3. Revisit lower-resolution H.264, ProRes, JPEG/MJPEG, AV1, or custom codecs
+   only after the HEVC path is measured; the target iMac Pro did not report
+   hardware decode support for ProRes, JPEG, or AV1.
 
 ## Clean-Room Record
 

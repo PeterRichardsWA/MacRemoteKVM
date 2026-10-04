@@ -137,6 +137,20 @@ resolutions and/or frame rates, requires a hardware VideoToolbox decoder for
 each, renders decoded frames through Metal/Core Image, and writes reports plus a
 summary to `results/008-receiver-decode-envelope/`.
 
+Run the receiver candidate stress test:
+
+```sh
+cd 009-receiver-candidate-stress
+./run_candidate_stress_probe.sh
+```
+
+Expected result: the probe runs the two first viable receiver candidates for a
+longer duration: H.264 3840x2160 at 60 fps and HEVC/H.265 3200x1800 at 60 fps.
+It requires a hardware VideoToolbox decoder, renders through Metal/Core Image,
+and writes reports plus a summary to `results/009-receiver-candidate-stress/`.
+By default each candidate runs fullscreen for 120 seconds. For a quick smoke
+run, set `MACRKVM_STRESS_SECONDS=15 MACRKVM_FULLSCREEN=no`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

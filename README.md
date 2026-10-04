@@ -28,9 +28,10 @@ The receiver decode envelope now has usable points on the target iMac Pro:
 4. HEVC/H.265 5120x2880 at 30 fps still failed to create a required-hardware
    decoder session.
 
-The next technical gate is choosing and stress-testing the first receiver
-transport candidate, likely H.264 4K60 scaled to the 5K display or HEVC
-3200x1800@60 for lower bandwidth.
+Experiment 009 now packages the first receiver stress test for those viable
+candidates. It runs H.264 4K60 scaled to the 5K display and HEVC 3200x1800@60,
+then records hardware decoder status, rendered FPS, render cost, process CPU,
+memory, thermal state, and local receiver latency proxies.
 
 ## Clean-Room Record
 
@@ -104,6 +105,10 @@ experiments/
       hevc-2560x1440-60-main-3s.mp4
       h264-3840x2160-60-high-3s.mp4
       h264-2560x1440-60-high-3s.mp4
+  009-receiver-candidate-stress/
+    ReceiverCandidateStressProbe
+    ReceiverCandidateStressProbe.m
+    run_candidate_stress_probe.sh
 
 results/
   002-screencapturekit-capture/
@@ -120,6 +125,8 @@ results/
     hevc-decode-render-result.md
   008-receiver-decode-envelope/
     decode-envelope-summary.md
+  009-receiver-candidate-stress/
+    candidate-stress-summary.md
 ```
 
 ## Build Probes
@@ -195,6 +202,20 @@ Receiver decode envelope ladder:
 ```sh
 cd experiments/008-receiver-decode-envelope
 ./run_decode_envelope_probe.sh
+```
+
+Receiver candidate stress test:
+
+```sh
+cd experiments/009-receiver-candidate-stress
+./run_candidate_stress_probe.sh
+```
+
+By default Experiment 009 runs each candidate fullscreen for 120 seconds. To run
+a shorter smoke pass, set `MACRKVM_STRESS_SECONDS`, for example:
+
+```sh
+MACRKVM_STRESS_SECONDS=15 MACRKVM_FULLSCREEN=no ./run_candidate_stress_probe.sh
 ```
 
 ## Distribution Assumption

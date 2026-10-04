@@ -612,9 +612,64 @@ Artifacts:
 - `experiments/008-receiver-decode-envelope/media/`
 - `results/008-receiver-decode-envelope/`
 
+## Experiment 009: Receiver Candidate Stress
+
+Date: 2026-10-04
+
+Question: Do the first viable receiver candidates remain stable over a longer
+local decode/render run, and what local receiver health signals do they show?
+
+Candidate paths:
+
+- H.264 3840x2160 at 60 fps scaled to the 5K display.
+- HEVC/H.265 3200x1800 at 60 fps scaled to the 5K display.
+
+Implementation:
+
+- Added `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe.m`.
+- Reused the native Apple API benchmark harness from Experiment 006.
+- Loops the selected compressed fixture for a configurable duration while
+  requiring a hardware VideoToolbox decoder.
+- Renders through `CAMetalLayer` plus Core Image.
+- Records hardware session status, rendered FPS, render failures, VideoToolbox
+  dropped-frame flags, process CPU time, resident memory, thermal state, decoder
+  startup time, and average synchronous render cost.
+- Writes one report per candidate plus
+  `results/009-receiver-candidate-stress/candidate-stress-summary.md`.
+- No proprietary binaries or protocols inspected.
+- No FFmpeg/x264/x265 implementation code was copied into this project.
+
+Run command:
+
+```sh
+./run_candidate_stress_probe.sh
+```
+
+Local smoke result:
+
+```text
+Machine: MacBookPro18,2, Apple M1 Max
+Run mode: windowed, 4 seconds per candidate
+H.264 3840x2160 @ 60: hardware session yes, 478 frames, 118.95 rendered FPS
+HEVC 3200x1800 @ 60: hardware session yes, 483 frames, 120.14 rendered FPS
+Decode errors: 0
+Render failures: 0
+Thermal state: nominal -> nominal for both candidates
+```
+
+Conclusion: The Experiment 009 package works locally. The local smoke test used
+a smaller windowed drawable, so it is not the decisive receiver result. The
+target iMac Pro Viewer should run the default fullscreen 120-second test.
+
+Artifacts:
+
+- `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe`
+- `experiments/009-receiver-candidate-stress/ReceiverCandidateStressProbe.m`
+- `experiments/009-receiver-candidate-stress/run_candidate_stress_probe.sh`
+- `results/009-receiver-candidate-stress/`
+
 ## Next Experiment
 
-Experiment 009 should stress-test the first viable receiver candidates for
-longer duration, latency, thermals, and subjective quality. Candidate paths:
-H.264 3840x2160 at 60 fps scaled to the 5K display, and HEVC 3200x1800 at
-60 fps as a lower-bandwidth alternative.
+Run Experiment 009 on the target iMac Pro Viewer. Use the default fullscreen
+120-second run first, then compare H.264 3840x2160@60 against HEVC
+3200x1800@60 for stability, thermals, and visible quality.

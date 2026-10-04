@@ -125,6 +125,18 @@ The target iMac Pro result identified H.264 3840x2160@60 as the strongest
 passing candidate so far, with HEVC 3200x1800@60 as a plausible lower-bandwidth
 candidate.
 
+Experiment 009 packages the longer receiver stress test:
+
+```sh
+cd experiments/009-receiver-candidate-stress
+./run_candidate_stress_probe.sh
+```
+
+It compares those two candidates over a default 120-second fullscreen run and
+records hardware decoder status, rendered FPS, render cost, process CPU, memory,
+thermal state, and local receiver latency proxies. The target iMac Pro result
+will decide which stream shape should become the first transport prototype.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

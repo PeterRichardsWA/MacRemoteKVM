@@ -1070,3 +1070,75 @@ with Thunderbolt labels:
 ./test.sh receiver thunderbolt-live
 ./test.sh sender <receiver-thunderbolt-ip> thunderbolt-live
 ```
+
+## Experiment 013: Live H.264 Shape Tuning
+
+Date: 2026-10-05
+
+Question: Did Experiment 012's live H.264 miss come from H.264 itself, or from
+trying to live capture/encode the larger 3840x2160 stream shape?
+
+Candidate path:
+
+- H.264 3200x1800 at 60 fps, default sender target bitrate 24 Mbps.
+
+Implementation:
+
+- Added `experiments/013-live-h264-shape-tuning/LiveH264ShapeProbe.m`.
+- Added `experiments/013-live-h264-shape-tuning/test.sh`.
+- Reuses the Experiment 012 live sender path and Experiment 011/012 receiver
+  protocol.
+- Narrows the run to one stream: H.264 3200x1800@60.
+- Receiver defaults to one stream for this experiment.
+- No proprietary binaries or protocols inspected.
+
+Build/check result:
+
+```text
+LiveH264ShapeProbe builds locally as a universal binary.
+Warnings: inherited AVAsset tracksWithMediaType deprecation warnings from the
+unused fixture-reader compatibility path.
+```
+
+Local smoke result:
+
+```text
+Run mode: local loopback on MacBookPro18,2, 2 seconds
+
+H.264 3200x1800 @ 60 live capture:
+  Sender: 113 frames sent, 56.06 FPS, 21.62 Mbps
+  Capture: 113 complete input frames, 56.70 observed complete-input FPS
+  Receiver: 113 received, 113 rendered, 60.76 rendered FPS, 23.43 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 10.652 ms
+```
+
+Conclusion: The local smoke run passed as an integration check. The lower H.264
+shape is close to the live 60 fps threshold locally and the receiver rendered
+every frame it received. The decisive result must come from a 30-second two-Mac
+wired Ethernet run.
+
+Run command:
+
+```sh
+./test.sh receiver wired-ethernet-h264-3200
+./test.sh sender <receiver-wired-ip> wired-ethernet-h264-3200
+```
+
+Artifacts:
+
+- `experiments/013-live-h264-shape-tuning/LiveH264ShapeProbe`
+- `experiments/013-live-h264-shape-tuning/LiveH264ShapeProbe.m`
+- `experiments/013-live-h264-shape-tuning/test.sh`
+- `experiments/013-live-h264-shape-tuning/README.md`
+- `experiments/013-live-h264-shape-tuning/results/`
+
+## Next Experiment
+
+Run Experiment 013 over wired Ethernet:
+
+```sh
+./test.sh receiver wired-ethernet-h264-3200
+./test.sh sender <receiver-wired-ip> wired-ethernet-h264-3200
+```

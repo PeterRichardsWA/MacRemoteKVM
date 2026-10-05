@@ -231,6 +231,25 @@ FPS with zero decode/render errors. H.264 3840x2160@60 completed cleanly but
 only delivered about 47 FPS from the sender; the receiver rendered every frame it
 received.
 
+Run the H.264 live shape tuning test:
+
+```sh
+cd 013-live-h264-shape-tuning
+./test.sh receiver wired-ethernet-h264-3200
+```
+
+Then, on the sender Mac:
+
+```sh
+cd 013-live-h264-shape-tuning
+./test.sh sender <receiver-host-or-ip> wired-ethernet-h264-3200
+```
+
+Expected result: the sender creates a 5120x2880 software virtual display,
+captures it live at 3200x1800, encodes H.264 3200x1800@60 with VideoToolbox, and
+streams that lower H.264 shape to the existing receiver path. Results are
+written under `013-live-h264-shape-tuning/results/<label>/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

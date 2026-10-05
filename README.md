@@ -83,6 +83,12 @@ decode/render errors. H.264 3840x2160 live capture completed cleanly but only
 sent about 46.8 FPS, so that path is a sender capture/encode pacing problem, not
 an iMac Pro receiver decode problem.
 
+Experiment 013 is packaged to tune that H.264 live path. It tests H.264
+3200x1800 at 60 fps using the same live virtual-display capture, VideoToolbox
+encode, TCP transport, and receiver render path. A short local smoke run passed
+functionally; the next decisive result is the 30-second two-Mac wired Ethernet
+run.
+
 ## Clean-Room Record
 
 The project logbook is the source of truth for sources, experiments, results,
@@ -184,6 +190,11 @@ experiments/
   012-live-capture-transport/
     LiveCaptureTransportProbe
     LiveCaptureTransportProbe.m
+    test.sh
+    results/
+  013-live-h264-shape-tuning/
+    LiveH264ShapeProbe
+    LiveH264ShapeProbe.m
     test.sh
     results/
 
@@ -348,6 +359,25 @@ cd experiments/012-live-capture-transport
 
 Results are written under
 `experiments/012-live-capture-transport/results/<label>/`.
+
+Live H.264 shape tuning:
+
+On the iMac Pro receiver:
+
+```sh
+cd experiments/013-live-h264-shape-tuning
+./test.sh receiver wired-ethernet-h264-3200
+```
+
+On the sender Mac:
+
+```sh
+cd experiments/013-live-h264-shape-tuning
+./test.sh sender <receiver-wired-ip> wired-ethernet-h264-3200
+```
+
+Results are written under
+`experiments/013-live-h264-shape-tuning/results/<label>/`.
 
 ## Distribution Assumption
 

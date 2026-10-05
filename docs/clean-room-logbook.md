@@ -1426,6 +1426,32 @@ native-frame-interval case is the interesting candidate because it reached about
 60 FPS in the short smoke. The decisive run should use the default 10-second
 cases or a 30-second labelled run on the sender Mac.
 
+Thirty-second capture tuning result:
+
+```text
+Run label: capture-tuning-30s
+Sender Mac: MacBookPro18,2, macOS 26.6.2
+
+Best/BGRA/q8/1-60 baseline: 1,723 complete frames, 57.42 FPS
+Automatic/BGRA/q8/1-60: 1,675 complete frames, 55.83 FPS
+Nominal/BGRA/q8/1-60: 1,724 complete frames, 57.44 FPS
+Best/BGRA/q3/1-60: 1,727 complete frames, 57.56 FPS
+Best/BGRA/q1/1-60: 0 complete frames, failed variant
+Best/BGRA/q8/native interval: 1,761 complete frames, 58.69 FPS
+Best/420f/q8/1-60: 1,717 complete frames, 57.22 FPS
+Best/420v/q8/1-60: 1,710 complete frames, 56.98 FPS
+```
+
+Conclusion: Native display frame interval (`kCMTimeZero`) is the best
+ScreenCaptureKit capture setting tested so far for 3200x1800, improving the
+capture-only path from 57.42 FPS to 58.69 FPS over 30 seconds. It is a real
+improvement, but still not a strict 60 Hz capture path before encode or
+transport. Queue depth 1 should be avoided. Pixel formats 420f and 420v worked
+but did not improve pacing over BGRA.
+
+Next candidate: combine native frame interval with the already-proven fast paths:
+3200x1800 capture, H.264 or HEVC 3200x1800 encode, and Thunderbolt transport.
+
 Run command:
 
 ```sh

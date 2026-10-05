@@ -445,6 +445,11 @@ Experiment 016 tests ScreenCaptureKit capture variants at the current
 vs 1/60 frame interval. It is sender-only and does not use the network. Results
 are written under `experiments/016-capture-tuning/results/<label>/`.
 
+The 30-second capture tuning run found the best result with native display frame
+interval (`kCMTimeZero`): `58.69 FPS`, up from the baseline `57.42 FPS`. That is
+a real improvement, but still not a strict 60 Hz capture path. Queue depth `1`
+produced no complete frames and should be avoided.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

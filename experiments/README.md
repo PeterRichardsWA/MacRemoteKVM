@@ -335,6 +335,20 @@ The 1-second local smoke showed the native-frame-interval case as the interestin
 candidate: Best/BGRA/q8/native reached about 60 FPS. Queue depth 1 produced no
 complete frames and should not be used as a live candidate.
 
+The 30-second `capture-tuning-30s` run found:
+
+- Baseline Best/BGRA/q8/1-60: 57.42 FPS.
+- Automatic/BGRA/q8/1-60: 55.83 FPS.
+- Nominal/BGRA/q8/1-60: 57.44 FPS.
+- Best/BGRA/q3/1-60: 57.56 FPS.
+- Best/BGRA/q1/1-60: 0 complete frames.
+- Best/BGRA/q8/native interval: 58.69 FPS.
+- Best/420f/q8/1-60: 57.22 FPS.
+- Best/420v/q8/1-60: 56.98 FPS.
+
+Interpretation: native display frame interval is the best capture setting tested
+so far, but it still falls short of strict 60 Hz over 30 seconds.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

@@ -1,0 +1,47 @@
+# Experiment 014 Encode-Only Result: HEVC 3200x1800 at 60 fps encode-only
+
+## Machine
+
+- Host name: peters-macbook-pro.local
+- macOS: Version 26.6.2 (Build 25G83)
+- Hardware model: MacBookPro18,2
+- CPU brand: Apple M1 Max
+
+## Encode Settings
+
+- Requested duration: 1.0 seconds
+- Source: preallocated IOSurface-backed BGRA synthetic pixel buffers
+- Synthetic buffer ring size: 4
+- Codec FourCC: `hvc1`
+- Codec name: HEVC/H.265
+- Encode dimensions: 3200 x 1800
+- FPS target: 60
+- Target bitrate: 24 Mbps
+- Encoder setup: low-latency create status: 0; prepare status: 0
+- Capture/network work: none
+- Submission pacing: real-time 60 Hz sleepUntil schedule
+
+## Encode Result
+
+- Success: yes
+- Submitted frames: 60
+- Encode call errors: 0
+- Encode call dropped flags: 0
+- Encoder output callbacks: 60
+- Output errors: 0
+- Output dropped frames: 0
+- Key frames: 1
+- Encoded bytes: 344025
+- Submission wall time: 1.001 seconds
+- Drain wall time: 0.001 seconds
+- Total wall time: 1.002 seconds
+- Submitted FPS: 59.94
+- Output FPS by total wall: 59.86
+- Output FPS by first/last callback: 62.21
+- Measured encoded bitrate: 2.75 Mbps
+- First output callback wall time: 0.054 seconds
+- Last output callback wall time: 1.002 seconds
+
+## Interpretation
+
+VideoToolbox encode-only pacing stayed inside the current 95% pass band for this synthetic stream.

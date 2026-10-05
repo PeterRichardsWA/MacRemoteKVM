@@ -261,6 +261,20 @@ This confirms the iMac Pro can decode/render the received H.264 3200x1800 stream
 cleanly, while the sender-side live capture/encode pacing still misses a strict
 60 Hz target.
 
+Run the sender pacing split:
+
+```sh
+cd 014-sender-pacing-split
+./test.sh
+```
+
+Expected result: the probe runs a sender-only ladder with no receiver and no
+network connection. The capture-only ladder measures ScreenCaptureKit pacing from
+a software 5K virtual display at 3200x1800, 3840x2160, and 5120x2880. The
+encode-only ladder measures VideoToolbox H.264/HEVC pacing from preallocated
+IOSurface-backed synthetic buffers. Results are written under
+`014-sender-pacing-split/results/<label>/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

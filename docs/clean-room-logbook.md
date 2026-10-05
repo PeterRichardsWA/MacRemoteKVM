@@ -1184,3 +1184,76 @@ Snitch timing boundary needs explicit fresh proof:
 ./test.sh receiver wired-ethernet-h264-3200
 ./test.sh sender <receiver-wired-ip> wired-ethernet-h264-3200
 ```
+
+## Experiment 014: Sender Pacing Split
+
+Date: 2026-10-05
+
+Question: Is the live sender ceiling coming from ScreenCaptureKit capture pacing
+or VideoToolbox encode pacing?
+
+Implementation:
+
+- Added `experiments/014-sender-pacing-split/SenderPacingSplitProbe.m`.
+- Added `experiments/014-sender-pacing-split/test.sh`.
+- The default command is `./test.sh`.
+- This is a sender-only experiment: no receiver and no network connection.
+- Capture-only cases use the same software 5K virtual display and animated
+  AppKit content style as the live sender path.
+- Encode-only cases use preallocated IOSurface-backed BGRA synthetic pixel
+  buffers so VideoToolbox can be tested without ScreenCaptureKit or TCP writes.
+- No proprietary binaries or protocols inspected.
+
+Default cases:
+
+- Capture-only: 3200x1800@60, 3840x2160@60, 5120x2880@60.
+- Encode-only: H.264 3200x1800@60, H.264 3840x2160@60, HEVC 3200x1800@60.
+
+Build/check result:
+
+```text
+SenderPacingSplitProbe builds locally as a universal binary.
+```
+
+Local smoke result:
+
+```text
+Run mode: local MacBookPro18,2, 1 second per case
+
+Capture-only:
+  3200x1800: 58 complete frames, 57.99 FPS by window, 57.42 FPS first/last
+  3840x2160: 57 complete frames, 56.81 FPS by window, 56.37 FPS first/last
+  5120x2880: 57 complete frames, 56.93 FPS by window, 57.79 FPS first/last
+
+Encode-only:
+  H.264 3200x1800: 60 submitted, 60 callbacks, 59.89 output FPS total
+  H.264 3840x2160: 55 submitted, 55 callbacks, 50.32 output FPS total
+  HEVC 3200x1800: 60 submitted, 60 callbacks, 59.86 output FPS total
+```
+
+Conclusion: The local smoke run passed as a harness check. The 1-second numbers
+already suggest H.264 3200x1800 and HEVC 3200x1800 encode-only can hold a paced
+60 Hz synthetic stream on the sender Mac, while H.264 3840x2160 encode-only does
+not. The decisive run should use the default 10-second cases or a 30-second
+labelled run on the sender Mac.
+
+Run command:
+
+```sh
+cd /Users/peterrichards/dev/MacRemoteKVM/experiments/014-sender-pacing-split
+./test.sh
+```
+
+Longer labelled run:
+
+```sh
+MACRKVM_DURATION=30 ./test.sh all sender-pacing-30s
+```
+
+Artifacts:
+
+- `experiments/014-sender-pacing-split/SenderPacingSplitProbe`
+- `experiments/014-sender-pacing-split/SenderPacingSplitProbe.m`
+- `experiments/014-sender-pacing-split/test.sh`
+- `experiments/014-sender-pacing-split/README.md`
+- `experiments/014-sender-pacing-split/results/`

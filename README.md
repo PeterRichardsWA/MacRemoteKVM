@@ -384,6 +384,20 @@ cd experiments/013-live-h264-shape-tuning
 Results are written under
 `experiments/013-live-h264-shape-tuning/results/<label>/`.
 
+Sender pacing split:
+
+On the sender Mac:
+
+```sh
+cd experiments/014-sender-pacing-split
+./test.sh
+```
+
+Experiment 014 separates the sender path into capture-only and encode-only
+ladders. It does not use the receiver and it does not open a network
+connection. Results are written under
+`experiments/014-sender-pacing-split/results/<label>/`.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

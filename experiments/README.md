@@ -205,6 +205,26 @@ Use a result label to keep each transport run separate:
 
 Labeled runs write results under `011-two-mac-transport/results/<label>/`.
 
+Run the live capture/encode transport test:
+
+```sh
+cd 012-live-capture-transport
+./test.sh receiver wired-ethernet-live
+```
+
+Then, on the sender Mac:
+
+```sh
+cd 012-live-capture-transport
+./test.sh sender <receiver-host-or-ip> wired-ethernet-live
+```
+
+Expected result: the sender creates a 5120x2880 software virtual display,
+captures it live with ScreenCaptureKit, encodes H.264 3840x2160@60 and
+HEVC/H.265 3200x1800@60 with VideoToolbox, and streams those live compressed
+frames to the existing receiver path. Results are written under
+`012-live-capture-transport/results/<label>/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

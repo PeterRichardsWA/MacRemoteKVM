@@ -918,5 +918,110 @@ Confirm the receiver IP belongs to the Thunderbolt network interface before
 starting the sender. Compare H.264 3840x2160@60 and HEVC 3200x1800@60 against
 the Wi-Fi 6E and wired Ethernet runs before changing codecs or stream shapes.
 
-If Thunderbolt also passes both candidates, the next gate is replacing
+Thunderbolt should still be tested when the right cable arrives. In parallel,
+wired Ethernet has passed enough of the transport gate to begin replacing
 prerecorded compressed fixtures with live sender capture/encode.
+
+## Experiment 012: Live Capture/Encode Transport
+
+Date: 2026-10-04
+
+Question: Can the sender create a software 5K virtual display, capture it live
+with ScreenCaptureKit, encode frames with VideoToolbox, and stream those live
+compressed frames into the same hardware-decoding iMac Pro receiver path?
+
+Candidate paths:
+
+- H.264 3840x2160 at 60 fps, default sender target bitrate 35 Mbps.
+- HEVC/H.265 3200x1800 at 60 fps, default sender target bitrate 20 Mbps.
+
+Implementation:
+
+- Added `experiments/012-live-capture-transport/LiveCaptureTransportProbe.m`.
+- Added `experiments/012-live-capture-transport/test.sh`.
+- Reuses the Experiment 011 TCP framing and serialized H.264/HEVC parameter-set
+  protocol on the receiver side.
+- Replaces the sender-side prerecorded MP4 fixture reader with:
+  - private CoreGraphics software virtual display creation,
+  - an animated AppKit test scene,
+  - ScreenCaptureKit live capture,
+  - VideoToolbox live H.264 or HEVC encoding,
+  - immediate TCP transmission of live compressed samples.
+- Sender connects to the receiver only after virtual-display, ScreenCaptureKit,
+  and encoder setup succeed. This prevents a setup/permission failure from
+  consuming one receiver stream slot.
+- No proprietary binaries or protocols inspected.
+
+Build/check result:
+
+```text
+LiveCaptureTransportProbe builds locally as a universal binary.
+Warnings: inherited AVAsset tracksWithMediaType deprecation warnings from the
+unused fixture-reader compatibility path.
+```
+
+Local smoke result:
+
+```text
+Run mode: local loopback on MacBookPro18,2, 2 seconds per candidate
+
+H.264 3840x2160 @ 60 live capture:
+  Sender: 101 frames sent, 47.98 FPS, 22.57 Mbps
+  Receiver: 101 received, 101 rendered, 52.49 rendered FPS
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 9.553 ms
+
+HEVC 3200x1800 @ 60 live capture:
+  Sender: 113 frames sent, 55.88 FPS, 14.16 Mbps
+  Receiver: 113 received, 113 rendered, 57.64 rendered FPS
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 4.099 ms
+```
+
+Conclusion: The local smoke run passed as an integration check. The software
+virtual display, ScreenCaptureKit capture, VideoToolbox live encode, TCP
+framing, hardware decode, and Metal render path all worked end to end for both
+candidate streams. This short smoke run did not prove full 60 fps performance;
+H.264 delivered about 48 sender FPS and HEVC delivered about 56 sender FPS.
+The decisive result must come from a 30-second two-Mac wired Ethernet run.
+
+Run command:
+
+```sh
+./test.sh receiver wired-ethernet-live
+./test.sh sender <receiver-wired-ip> wired-ethernet-live
+```
+
+Note: the sender Mac may need Screen Recording permission for the app or terminal
+running the test. If macOS prompts for permission, grant it and rerun.
+
+Artifacts:
+
+- `experiments/012-live-capture-transport/LiveCaptureTransportProbe`
+- `experiments/012-live-capture-transport/LiveCaptureTransportProbe.m`
+- `experiments/012-live-capture-transport/test.sh`
+- `experiments/012-live-capture-transport/README.md`
+- `experiments/012-live-capture-transport/results/`
+
+## Next Experiment
+
+Run Experiment 012 over wired Ethernet. Start the receiver on the iMac Pro, then
+run the sender on the faster Mac using the iMac Pro's wired Ethernet IP address:
+
+```sh
+./test.sh receiver wired-ethernet-live
+./test.sh sender <receiver-wired-ip> wired-ethernet-live
+```
+
+When the Thunderbolt cable arrives, run both Experiment 011 and Experiment 012
+with Thunderbolt labels:
+
+```sh
+./test.sh receiver thunderbolt
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt
+
+./test.sh receiver thunderbolt-live
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt-live
+```

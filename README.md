@@ -71,7 +71,14 @@ The wired Ethernet run passed both candidates:
    rendered 1801 frames, and held 60.00 rendered FPS with zero decode/render
    errors.
 
-Next we need the same Experiment 011 package over Thunderbolt networking.
+Thunderbolt should still be tested when the right cable arrives, but wired
+Ethernet has cleared the transport gate enough to start Experiment 012: live
+ScreenCaptureKit capture from a software 5K virtual display, live VideoToolbox
+encode, and network transport into the same receiver path.
+
+Experiment 012 is packaged and passed a short local loopback smoke run. The
+integrated live path works, but the smoke run did not prove full 60 fps sender
+performance; the next decisive run is a 30-second two-Mac wired Ethernet test.
 
 ## Clean-Room Record
 
@@ -171,6 +178,11 @@ experiments/
     results/
       loopback-receiver/
       loopback-sender/
+  012-live-capture-transport/
+    LiveCaptureTransportProbe
+    LiveCaptureTransportProbe.m
+    test.sh
+    results/
 
 results/
   002-screencapturekit-capture/
@@ -314,6 +326,25 @@ cd experiments/011-two-mac-transport
 For Thunderbolt networking, use the same commands with `thunderbolt` as the
 label and the receiver IP address from the Thunderbolt network interface.
 Results are written under `experiments/011-two-mac-transport/results/<label>/`.
+
+Live capture/encode transport:
+
+On the iMac Pro receiver:
+
+```sh
+cd experiments/012-live-capture-transport
+./test.sh receiver wired-ethernet-live
+```
+
+On the sender Mac:
+
+```sh
+cd experiments/012-live-capture-transport
+./test.sh sender <receiver-wired-ip> wired-ethernet-live
+```
+
+Results are written under
+`experiments/012-live-capture-transport/results/<label>/`.
 
 ## Distribution Assumption
 

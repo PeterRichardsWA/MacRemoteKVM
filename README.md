@@ -431,6 +431,20 @@ That is far above the current compressed video bitrate, so Thunderbolt transport
 headroom is excellent; the current live-stream limit remains ScreenCaptureKit
 capture pacing.
 
+ScreenCaptureKit capture tuning:
+
+On the sender Mac:
+
+```sh
+cd experiments/016-capture-tuning
+./test.sh
+```
+
+Experiment 016 tests ScreenCaptureKit capture variants at the current
+3200x1800 stream shape: capture resolution, queue depth, pixel format, and native
+vs 1/60 frame interval. It is sender-only and does not use the network. Results
+are written under `experiments/016-capture-tuning/results/<label>/`.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

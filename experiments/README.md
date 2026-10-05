@@ -319,6 +319,22 @@ macOS approval pause, and that time was excluded from the measured payload
 window. Interpretation: Thunderbolt transport has ample headroom; it is not the
 current live-stream bottleneck.
 
+Run the ScreenCaptureKit capture tuning test:
+
+```sh
+cd 016-capture-tuning
+./test.sh
+```
+
+Expected result: the probe captures a software 5K virtual display at 3200x1800
+without encode or network work. It varies `captureResolution`, `queueDepth`,
+`pixelFormat`, and the frame interval. Results are written under
+`016-capture-tuning/results/<label>/`.
+
+The 1-second local smoke showed the native-frame-interval case as the interesting
+candidate: Best/BGRA/q8/native reached about 60 FPS. Queue depth 1 produced no
+complete frames and should not be used as a live candidate.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

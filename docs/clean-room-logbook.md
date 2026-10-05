@@ -1370,3 +1370,79 @@ Artifacts:
 - `experiments/015-thunderbolt-throughput/test.sh`
 - `experiments/015-thunderbolt-throughput/README.md`
 - `experiments/015-thunderbolt-throughput/results/`
+
+## Experiment 016: ScreenCaptureKit Capture Tuning
+
+Date: 2026-10-05
+
+Question: Which ScreenCaptureKit configuration gets the current 3200x1800 live
+capture path closest to strict 60 Hz?
+
+Implementation:
+
+- Added `experiments/016-capture-tuning/CaptureTuningProbe.m`.
+- Added `experiments/016-capture-tuning/test.sh`.
+- Reuses the software 5K virtual display and animated AppKit source style from
+  the live sender path.
+- Sender-only: no receiver and no network connection.
+- Tests ScreenCaptureKit capture variants at 3200x1800.
+- No proprietary binaries or protocols inspected.
+
+Default cases:
+
+- Best/BGRA/queue 8/1-60.
+- Automatic/BGRA/queue 8/1-60.
+- Nominal/BGRA/queue 8/1-60.
+- Best/BGRA/queue 3/1-60.
+- Best/BGRA/queue 1/1-60.
+- Best/BGRA/queue 8/native interval.
+- Best/420f/queue 8/1-60.
+- Best/420v/queue 8/1-60.
+
+Build/check result:
+
+```text
+CaptureTuningProbe builds locally as a universal binary.
+```
+
+Local smoke result:
+
+```text
+Run mode: local MacBookPro18,2, 1 second per case
+
+Baseline Best/BGRA/q8/1-60: 58 complete frames, 57.76 FPS
+Automatic/BGRA/q8/1-60: 57 complete frames, 56.98 FPS
+Nominal/BGRA/q8/1-60: 57 complete frames, 56.63 FPS
+Best/BGRA/q3/1-60: 58 complete frames, 57.73 FPS
+Best/BGRA/q1/1-60: 0 complete frames
+Best/BGRA/q8/native interval: 61 complete frames, 60.44 FPS
+Best/420f/q8/1-60: 57 complete frames, 56.58 FPS
+Best/420v/q8/1-60: 58 complete frames, 57.85 FPS
+```
+
+Conclusion: The local smoke run passed as a harness check. Queue depth 1
+produced no complete frames and should not be used as a live candidate. The
+native-frame-interval case is the interesting candidate because it reached about
+60 FPS in the short smoke. The decisive run should use the default 10-second
+cases or a 30-second labelled run on the sender Mac.
+
+Run command:
+
+```sh
+cd /Users/peterrichards/dev/MacRemoteKVM/experiments/016-capture-tuning
+./test.sh
+```
+
+Longer labelled run:
+
+```sh
+MACRKVM_DURATION=30 ./test.sh all capture-tuning-30s
+```
+
+Artifacts:
+
+- `experiments/016-capture-tuning/CaptureTuningProbe`
+- `experiments/016-capture-tuning/CaptureTuningProbe.m`
+- `experiments/016-capture-tuning/test.sh`
+- `experiments/016-capture-tuning/README.md`
+- `experiments/016-capture-tuning/results/`

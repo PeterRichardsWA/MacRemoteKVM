@@ -856,6 +856,31 @@ HEVC 3200x1800 @ 60:
   Average frame interarrival: 16.656 ms
 ```
 
+Two-Mac wired Ethernet result:
+
+```text
+Network condition: wired Ethernet
+Sender: MacBookPro18,2, Apple M1 Max, macOS 26.6.2, peters-macbook-pro.local
+Receiver: iMacPro1,1, Intel Xeon W-2191B, macOS 15.8, dadimacpro.local
+Destination: 192.168.0.91:49320
+
+H.264 3840x2160 @ 60:
+  Sender: 1801 frames sent in 30.001 seconds, 60.03 FPS, 20.74 Mbps
+  Receiver: 1801 received, 1801 rendered, 59.89 rendered FPS, 20.69 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 49.985 ms
+  Average frame interarrival: 16.679 ms
+
+HEVC 3200x1800 @ 60:
+  Sender: 1801 frames sent in 30.004 seconds, 60.02 FPS, 14.13 Mbps
+  Receiver: 1801 received, 1801 rendered, 60.00 rendered FPS, 14.13 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 33.745 ms
+  Average frame interarrival: 16.656 ms
+```
+
 Conclusion: The Experiment 011 package works locally and across two Macs. The
 local smoke test proves the serialized decoder configuration path and TCP
 framing path. The Wi-Fi 6E two-Mac result proves that HEVC 3200x1800@60 can
@@ -863,7 +888,11 @@ complete a full 30-second sender-to-receiver run into the iMac Pro display path
 with 1:1 sent/received/rendered frame counts. H.264 3840x2160@60 did not pass
 the Wi-Fi 6E sender/network path in this run because the sender only delivered
 1190 frames in 30 seconds. The receiver decoded and rendered every H.264 frame it
-received, so this result does not rule out H.264 on a better transport.
+received, so this result does not rule out H.264 on a better transport. The
+wired Ethernet run then passed both H.264 3840x2160@60 and HEVC 3200x1800@60
+with 1:1 sent/received/rendered frame counts and zero decode/render errors.
+That confirms the Wi-Fi 6E H.264 miss was transport-related, not a receiver
+decode/render limitation.
 
 Artifacts:
 
@@ -876,22 +905,18 @@ Artifacts:
 
 ## Next Experiment
 
-Rerun the same Experiment 011 package across the two Macs over wired Ethernet
-and Thunderbolt networking. Use the result-label argument so each network path
-gets its own results subdirectory:
+Rerun the same Experiment 011 package across the two Macs over Thunderbolt
+networking. Use the result-label argument so the Thunderbolt run gets its own
+results subdirectory:
 
 ```sh
-./test.sh receiver wired-ethernet
-./test.sh sender <receiver-wired-ip> wired-ethernet
-
 ./test.sh receiver thunderbolt
 ./test.sh sender <receiver-thunderbolt-ip> thunderbolt
 ```
 
-Confirm the receiver IP belongs to the intended wired Ethernet or Thunderbolt
-network interface before starting the sender. Compare H.264 3840x2160@60 and
-HEVC 3200x1800@60 against the Wi-Fi 6E run before changing codecs or stream
-shapes.
+Confirm the receiver IP belongs to the Thunderbolt network interface before
+starting the sender. Compare H.264 3840x2160@60 and HEVC 3200x1800@60 against
+the Wi-Fi 6E and wired Ethernet runs before changing codecs or stream shapes.
 
-If wired Ethernet or Thunderbolt passes both candidates, the next gate is
-replacing prerecorded compressed fixtures with live sender capture/encode.
+If Thunderbolt also passes both candidates, the next gate is replacing
+prerecorded compressed fixtures with live sender capture/encode.

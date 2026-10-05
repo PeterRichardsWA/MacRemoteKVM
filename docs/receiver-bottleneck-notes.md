@@ -203,10 +203,14 @@ rendered FPS. This points at sender pacing, TCP backpressure, or wireless
 transport behavior for that run; it is not evidence that the iMac Pro receiver
 cannot decode/render the H.264 stream.
 
-The next receiver-relevant comparison is the same Experiment 011 run over wired
-Ethernet and Thunderbolt networking. Those runs should use the same stream
-fixtures and report structure so the only intentional variable is the network
-path.
+The wired Ethernet run confirmed that interpretation. H.264 3840x2160@60 passed
+with 1801 frames sent, received, and rendered in 30 seconds at about 59.89
+rendered FPS, zero decode errors, and zero render failures. HEVC 3200x1800@60
+also passed with 1801 frames sent, received, and rendered at 60.00 rendered FPS.
+
+The next receiver-relevant comparison is the same Experiment 011 run over
+Thunderbolt networking. That run should use the same stream fixtures and report
+structure so the only intentional variable is the network path.
 
 ## Sources
 

@@ -156,5 +156,26 @@ Summary:
 HEVC 3200x1800@60 passed across the Wi-Fi 6E two-Mac path. H.264
 3840x2160@60 did not pass as an end-to-end Wi-Fi 6E sender path because the
 sender only delivered 1190 frames in 30 seconds, but the iMac Pro receiver
-decoded and rendered every frame it received. The next comparison should rerun
-the same Experiment 011 package over wired Ethernet and Thunderbolt networking.
+decoded and rendered every frame it received. This result motivated wired
+transport comparison before changing codec candidates.
+
+## Experiment 011 Wired Ethernet Two-Mac Transport Result
+
+The same two-Mac transport probe was run over wired Ethernet with this iMac Pro
+as the receiver.
+
+Summary:
+
+- H.264 3840x2160 at 60 fps: hardware session yes, 1801 frames sent,
+  1801 frames received, 1801 frames rendered, 59.89 rendered FPS, zero decode
+  errors, zero render failures.
+- HEVC 3200x1800 at 60 fps: hardware session yes, 1801 frames sent,
+  1801 frames received, 1801 frames rendered, 60.00 rendered FPS, zero decode
+  errors, zero render failures.
+- Average receive-complete-to-render latency: 49.985 ms for H.264, 33.745 ms
+  for HEVC.
+- Measured receiver bitrate: 20.69 Mbps for H.264, 14.13 Mbps for HEVC.
+
+Both first transport candidates passed across wired Ethernet. This confirms the
+Wi-Fi 6E H.264 shortfall was transport-related rather than a receiver
+decode/render limit. The next comparison is Thunderbolt networking.

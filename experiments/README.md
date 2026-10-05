@@ -188,10 +188,10 @@ Results are written under `011-two-mac-transport/results/`.
 
 The first real two-Mac run was over Wi-Fi 6E. HEVC 3200x1800@60 passed for the
 full 30-second run. H.264 3840x2160@60 decoded and rendered all received frames,
-but the sender only delivered 1190 frames in 30 seconds. Rerun this same test
-over wired Ethernet and Thunderbolt networking before changing the codec
-candidates. Use the receiver IP address for the active wired or Thunderbolt
-interface when starting the sender.
+but the sender only delivered 1190 frames in 30 seconds. The wired Ethernet run
+passed both candidates for the full 30-second run. Rerun this same test over
+Thunderbolt networking before changing the codec candidates. Use the receiver IP
+address for the active Thunderbolt interface when starting the sender.
 
 Use a result label to keep each transport run separate:
 

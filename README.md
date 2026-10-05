@@ -62,8 +62,16 @@ the iMac Pro receiver:
    transport/sender pacing result for the Wi-Fi 6E path, not a receiver decode
    failure.
 
-Next we need to rerun the same Experiment 011 package over wired Ethernet and
-Thunderbolt networking.
+The wired Ethernet run passed both candidates:
+
+1. H.264 3840x2160 at 60 fps sent 1801 frames, received 1801 frames, rendered
+   1801 frames, and held about 59.89 rendered FPS with zero decode/render
+   errors.
+2. HEVC/H.265 3200x1800 at 60 fps sent 1801 frames, received 1801 frames,
+   rendered 1801 frames, and held 60.00 rendered FPS with zero decode/render
+   errors.
+
+Next we need the same Experiment 011 package over Thunderbolt networking.
 
 ## Clean-Room Record
 

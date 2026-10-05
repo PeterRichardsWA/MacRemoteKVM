@@ -308,6 +308,17 @@ network preflight write/ack before the timed payload window so Little Snitch or
 macOS network permission prompts are excluded from throughput numbers. Results
 are written under `015-thunderbolt-throughput/results/<label>/`.
 
+The first Thunderbolt run found:
+
+- 64 KiB blocks: 20,157.25 Mbps receiver-confirmed.
+- 256 KiB blocks: 20,154.73 Mbps receiver-confirmed.
+- 1 MiB blocks: 20,165.37 Mbps receiver-confirmed.
+
+The first sender preflight took 4,500.489 ms, consistent with a Little Snitch or
+macOS approval pause, and that time was excluded from the measured payload
+window. Interpretation: Thunderbolt transport has ample headroom; it is not the
+current live-stream bottleneck.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

@@ -425,6 +425,12 @@ network path. It includes a preflight handshake so Little Snitch approvals happe
 outside the timed payload window. Results are written under
 `experiments/015-thunderbolt-throughput/results/<label>/`.
 
+The first Thunderbolt run measured about 20.16 Gbps receiver-confirmed
+single-stream TCP payload throughput across 64 KiB, 256 KiB, and 1 MiB blocks.
+That is far above the current compressed video bitrate, so Thunderbolt transport
+headroom is excellent; the current live-stream limit remains ScreenCaptureKit
+capture pacing.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

@@ -1326,6 +1326,35 @@ Conclusion: The local smoke run passed as a harness check and proves the
 preflight/reporting path works. It does not represent Thunderbolt performance.
 The decisive result must be collected over the Thunderbolt network interface.
 
+Thunderbolt result:
+
+```text
+Run label: thunderbolt-throughput
+Sender Mac: MacBookPro18,2, macOS 26.6.2
+Receiver Mac: iMacPro1,1, macOS 15.8
+Receiver Thunderbolt IP used by sender: 169.254.159.17
+
+Receiver-confirmed single-stream TCP payload throughput:
+  64 KiB blocks: 25,199,968,256 bytes, 20,157.25 Mbps, 2,402.93 MiB/s
+  256 KiB blocks: 25,197,281,280 bytes, 20,154.73 Mbps, 2,402.63 MiB/s
+  1 MiB blocks: 25,210,912,768 bytes, 20,165.37 Mbps, 2,403.90 MiB/s
+
+Sender first-case preflight:
+  4,500.489 ms, outside the measured payload window
+```
+
+Path note: the sender reports are under
+`experiments/015-thunderbolt-throughput/results/thunderbolt-throughput/sender/`.
+The receiver reports were run without the label and landed under
+`experiments/015-thunderbolt-throughput/results/receiver/`. Case indexes and
+byte counts match exactly, so the result pair is unambiguous.
+
+Conclusion: Thunderbolt networking delivered about 20.16 Gbps of stable
+single-stream TCP payload throughput. That is far above the current compressed
+video bitrates, including the live H.264/HEVC 3200x1800 candidates. The current
+live 3200x1800 ceiling remains ScreenCaptureKit capture pacing from Experiment
+014, not transport bandwidth.
+
 Run command:
 
 ```sh

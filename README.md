@@ -404,6 +404,27 @@ does not hold strict 60 Hz. That points the current 3200x1800 live sender
 ceiling at capture pacing rather than VideoToolbox encode, network transport, or
 the iMac Pro receiver.
 
+Thunderbolt/raw TCP throughput:
+
+On the receiver Mac:
+
+```sh
+cd experiments/015-thunderbolt-throughput
+./test.sh receiver thunderbolt-throughput
+```
+
+On the sender Mac:
+
+```sh
+cd experiments/015-thunderbolt-throughput
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt-throughput
+```
+
+Experiment 015 measures raw single-stream TCP throughput over the selected
+network path. It includes a preflight handshake so Little Snitch approvals happen
+outside the timed payload window. Results are written under
+`experiments/015-thunderbolt-throughput/results/<label>/`.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

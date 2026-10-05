@@ -288,6 +288,26 @@ Interpretation: the current live 3200x1800 sender ceiling is capture pacing, not
 VideoToolbox encode. H.264 3840x2160@60 is also encode-limited and should not be
 the first live stream candidate.
 
+Run the Thunderbolt/raw TCP throughput test:
+
+```sh
+cd 015-thunderbolt-throughput
+./test.sh receiver thunderbolt-throughput
+```
+
+Then, on the sender Mac:
+
+```sh
+cd 015-thunderbolt-throughput
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt-throughput
+```
+
+Expected result: the probe measures single-stream TCP throughput over the active
+network path with 64 KiB, 256 KiB, and 1 MiB payload blocks. Each case performs a
+network preflight write/ack before the timed payload window so Little Snitch or
+macOS network permission prompts are excluded from throughput numbers. Results
+are written under `015-thunderbolt-throughput/results/<label>/`.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

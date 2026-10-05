@@ -1285,3 +1285,59 @@ Artifacts:
 - `experiments/014-sender-pacing-split/test.sh`
 - `experiments/014-sender-pacing-split/README.md`
 - `experiments/014-sender-pacing-split/results/`
+
+## Experiment 015: Thunderbolt Throughput
+
+Date: 2026-10-05
+
+Question: What raw single-stream TCP throughput do we get over the Thunderbolt
+network path?
+
+Implementation:
+
+- Added `experiments/015-thunderbolt-throughput/NetworkThroughputProbe.c`.
+- Added `experiments/015-thunderbolt-throughput/test.sh`.
+- The receiver listens on a TCP port and accepts one connection per case.
+- The sender runs three single-stream throughput cases: 64 KiB blocks, 256 KiB
+  blocks, and 1 MiB blocks.
+- Each case performs a TCP preflight write/ack before the measured payload
+  window, so Little Snitch or macOS network permission prompts are excluded from
+  throughput measurements.
+- No proprietary binaries or protocols inspected.
+
+Build/check result:
+
+```text
+NetworkThroughputProbe builds locally as a universal binary.
+```
+
+Local smoke result:
+
+```text
+Run mode: local loopback on MacBookPro18,2, 1 second per case
+
+Receiver-confirmed throughput:
+  64 KiB blocks: 32,037 Mbps
+  256 KiB blocks: 38,199 Mbps
+  1 MiB blocks: 41,056 Mbps
+```
+
+Conclusion: The local smoke run passed as a harness check and proves the
+preflight/reporting path works. It does not represent Thunderbolt performance.
+The decisive result must be collected over the Thunderbolt network interface.
+
+Run command:
+
+```sh
+cd /Users/peterrichards/dev/MacRemoteKVM/experiments/015-thunderbolt-throughput
+./test.sh receiver thunderbolt-throughput
+./test.sh sender <receiver-thunderbolt-ip> thunderbolt-throughput
+```
+
+Artifacts:
+
+- `experiments/015-thunderbolt-throughput/NetworkThroughputProbe`
+- `experiments/015-thunderbolt-throughput/NetworkThroughputProbe.c`
+- `experiments/015-thunderbolt-throughput/test.sh`
+- `experiments/015-thunderbolt-throughput/README.md`
+- `experiments/015-thunderbolt-throughput/results/`

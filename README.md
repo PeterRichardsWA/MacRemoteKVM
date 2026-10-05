@@ -76,9 +76,12 @@ Ethernet has cleared the transport gate enough to start Experiment 012: live
 ScreenCaptureKit capture from a software 5K virtual display, live VideoToolbox
 encode, and network transport into the same receiver path.
 
-Experiment 012 is packaged and passed a short local loopback smoke run. The
-integrated live path works, but the smoke run did not prove full 60 fps sender
-performance; the next decisive run is a 30-second two-Mac wired Ethernet test.
+Experiment 012 passed the live HEVC path over wired Ethernet. HEVC/H.265
+3200x1800 at 60 fps live capture sent 1721 frames, rendered 1721 frames, and
+held about 57.4 rendered FPS, clearing the current 95% pass band with zero
+decode/render errors. H.264 3840x2160 live capture completed cleanly but only
+sent about 46.8 FPS, so that path is a sender capture/encode pacing problem, not
+an iMac Pro receiver decode problem.
 
 ## Clean-Room Record
 

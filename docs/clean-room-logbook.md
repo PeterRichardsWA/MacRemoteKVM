@@ -985,7 +985,43 @@ virtual display, ScreenCaptureKit capture, VideoToolbox live encode, TCP
 framing, hardware decode, and Metal render path all worked end to end for both
 candidate streams. This short smoke run did not prove full 60 fps performance;
 H.264 delivered about 48 sender FPS and HEVC delivered about 56 sender FPS.
-The decisive result must come from a 30-second two-Mac wired Ethernet run.
+
+Two-Mac wired Ethernet live result:
+
+```text
+Network condition: wired Ethernet
+Sender: MacBookPro18,2, Apple M1 Max, macOS 26.6.2, peters-macbook-pro.local
+Receiver: iMacPro1,1, Intel Xeon W-2191B, macOS 15.8, dadimacpro.local
+Destination: 192.168.0.91:49320
+Receiver render drawable observed during run: 5760x3240
+
+H.264 3840x2160 @ 60 live capture:
+  Sender: 1409 frames sent in 30.099 seconds, 46.81 FPS, 20.69 Mbps
+  Capture: 1409 complete input frames, 46.93 observed complete-input FPS
+  Receiver: 1409 received, 1409 rendered, 47.08 rendered FPS, 20.80 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 12.405 ms
+  Average frame interarrival: 21.236 ms
+
+HEVC 3200x1800 @ 60 live capture:
+  Sender: 1721 frames sent in 30.015 seconds, 57.34 FPS, 14.73 Mbps
+  Capture: 1721 complete input frames, 57.32 observed complete-input FPS
+  Receiver: 1721 received, 1721 rendered, 57.42 rendered FPS, 14.75 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average receive-complete-to-render latency: 19.194 ms
+  Average frame interarrival: 17.412 ms
+```
+
+Conclusion: Experiment 012 proves the live software virtual display ->
+ScreenCaptureKit -> VideoToolbox -> TCP -> hardware decode/render path works
+across two Macs over wired Ethernet. HEVC 3200x1800@60 is the first live
+transport candidate to pass the current threshold at about 0.96x realtime, with
+1:1 sent/received/rendered frame counts and zero decode/render errors. H.264
+3840x2160@60 live capture completed cleanly but only delivered about 47 FPS from
+the sender. Because the receiver rendered every H.264 frame it received, this is
+a sender capture/encode pacing problem, not a receiver decode/render problem.
 
 Run command:
 
@@ -1007,8 +1043,17 @@ Artifacts:
 
 ## Next Experiment
 
-Run Experiment 012 over wired Ethernet. Start the receiver on the iMac Pro, then
-run the sender on the faster Mac using the iMac Pro's wired Ethernet IP address:
+Use HEVC 3200x1800@60 as the first live transport baseline. The next engineering
+gate is sender-side live pacing and stream-shape tuning:
+
+- Try a lower H.264 live capture shape, such as 3200x1800@60, to separate H.264
+  codec cost from 3840x2160 capture cost.
+- Try HEVC 3840x2160@60 live capture only if sender-side capture/encode tuning
+  improves; the iMac Pro already failed prerecorded HEVC 4K60 receiver pacing.
+- Keep the prerecorded Experiment 011 Thunderbolt comparison when the cable
+  arrives, then run Experiment 012 with a `thunderbolt-live` label.
+
+Reference command for the current passing live baseline:
 
 ```sh
 ./test.sh receiver wired-ethernet-live

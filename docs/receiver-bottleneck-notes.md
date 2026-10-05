@@ -212,6 +212,14 @@ The next receiver-relevant comparison is the same Experiment 011 run over
 Thunderbolt networking. That run should use the same stream fixtures and report
 structure so the only intentional variable is the network path.
 
+Experiment 012 replaced prerecorded fixtures with live sender capture/encode
+over wired Ethernet. HEVC 3200x1800@60 passed the current live threshold: 1721
+frames sent, received, and rendered over 30 seconds at about 57.4 rendered FPS,
+with zero decode errors and zero render failures. H.264 3840x2160@60 completed
+cleanly but only delivered about 46.8 sender FPS and 47.1 rendered FPS. The
+receiver rendered every H.264 frame it received, so the H.264 live miss is a
+sender capture/encode pacing issue rather than a receiver decode/render issue.
+
 ## Sources
 
 - Apple VideoToolbox documentation: https://developer.apple.com/documentation/videotoolbox

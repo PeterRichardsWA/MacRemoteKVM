@@ -179,3 +179,26 @@ Summary:
 Both first transport candidates passed across wired Ethernet. This confirms the
 Wi-Fi 6E H.264 shortfall was transport-related rather than a receiver
 decode/render limit. The next comparison is Thunderbolt networking.
+
+## Experiment 012 Wired Ethernet Live Capture Result
+
+The live capture/encode transport probe was run over wired Ethernet with this
+iMac Pro as the receiver.
+
+Summary:
+
+- H.264 3840x2160 at 60 fps live capture: hardware session yes, 1409 frames
+  sent, 1409 frames received, 1409 frames rendered, 47.08 rendered FPS, zero
+  decode errors, zero render failures. Sender-side live capture/encode pacing
+  was 46.81 FPS.
+- HEVC 3200x1800 at 60 fps live capture: hardware session yes, 1721 frames sent,
+  1721 frames received, 1721 frames rendered, 57.42 rendered FPS, zero decode
+  errors, zero render failures.
+- Average receive-complete-to-render latency: 12.405 ms for H.264, 19.194 ms
+  for HEVC.
+- Measured receiver bitrate: 20.80 Mbps for H.264, 14.75 Mbps for HEVC.
+- Render drawable observed during the run: 5760x3240.
+
+HEVC 3200x1800@60 is the first live sender-to-receiver candidate to pass the
+current threshold. H.264 3840x2160@60 remains a sender live capture/encode
+pacing problem, not an iMac Pro decode/render failure.

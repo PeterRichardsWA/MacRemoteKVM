@@ -46,3 +46,15 @@ output at the stream dimensions.
   audio.
 - Thunderbolt can use the same commands with a different label, for example
   `thunderbolt-live`.
+
+## Wired Ethernet Result
+
+The 30-second wired Ethernet run passed the HEVC live path:
+
+- HEVC 3200x1800@60 live capture: 1721 frames sent, received, and rendered,
+  57.42 rendered FPS, zero decode errors, zero render failures.
+- H.264 3840x2160@60 live capture: 1409 frames sent, received, and rendered,
+  47.08 rendered FPS, zero decode errors, zero render failures.
+
+The H.264 miss is sender-side capture/encode pacing. The receiver rendered every
+frame it received.

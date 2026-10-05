@@ -225,6 +225,12 @@ HEVC/H.265 3200x1800@60 with VideoToolbox, and streams those live compressed
 frames to the existing receiver path. Results are written under
 `012-live-capture-transport/results/<label>/`.
 
+The first 30-second wired Ethernet live run passed the HEVC path: HEVC
+3200x1800@60 sent, received, and rendered 1721 frames at about 57.4 rendered
+FPS with zero decode/render errors. H.264 3840x2160@60 completed cleanly but
+only delivered about 47 FPS from the sender; the receiver rendered every frame it
+received.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

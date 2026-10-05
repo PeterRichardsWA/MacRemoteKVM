@@ -83,11 +83,16 @@ decode/render errors. H.264 3840x2160 live capture completed cleanly but only
 sent about 46.8 FPS, so that path is a sender capture/encode pacing problem, not
 an iMac Pro receiver decode problem.
 
-Experiment 013 is packaged to tune that H.264 live path. It tests H.264
-3200x1800 at 60 fps using the same live virtual-display capture, VideoToolbox
-encode, TCP transport, and receiver render path. A short local smoke run passed
-functionally; the next decisive result is the 30-second two-Mac wired Ethernet
-run.
+Experiment 013 tested that H.264 live path at 3200x1800 at 60 fps using the
+same live virtual-display capture, VideoToolbox encode, TCP transport, and
+receiver render path. The wired Ethernet run sent and rendered every frame with
+zero decode/render errors, but only produced about 56.6 sender FPS. That points
+back to sender-side live capture/encode pacing, not iMac Pro receiver decode.
+
+Network timing note: from the Experiment 013 harness update onward, the sender
+and receiver perform a small TCP preflight handshake before the timed live
+capture window. This keeps Little Snitch or macOS network-permission prompts out
+of the measured sender FPS window.
 
 ## Clean-Room Record
 

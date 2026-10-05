@@ -1134,9 +1134,51 @@ Artifacts:
 - `experiments/013-live-h264-shape-tuning/README.md`
 - `experiments/013-live-h264-shape-tuning/results/`
 
+Two-Mac wired Ethernet result:
+
+```text
+Run label: wired-ethernet-h264-3200
+Sender Mac: MacBookPro18,2, macOS 26.6.2
+Receiver Mac: iMacPro1,1, macOS 15.8
+
+H.264 3200x1800 @ 60 live capture:
+  Sender: 1700 frames sent, 56.62 FPS, 20.91 Mbps
+  Capture: 1700 complete input frames, 56.64 observed complete-input FPS
+  Receiver: 1700 received, 1700 rendered, 56.98 rendered FPS, 21.05 Mbps
+  Decode errors: 0
+  Render failures: 0
+  Average synchronous render time: 2.480 ms
+  Average receive-complete-to-render latency: 12.049 ms
+```
+
+Conclusion: H.264 3200x1800@60 over wired Ethernet was clean but narrowly below
+the strict 60 Hz target. The iMac Pro receiver created the required hardware
+H.264 decoder, rendered every received frame to a 5760x3240 drawable, and showed
+low render cost. The miss is therefore sender-side live capture/encode pacing,
+not receiver decode/render capacity for this stream shape.
+
+Network permission timing note:
+
+- The original Experiment 013 measurement starts after the sender TCP `connect()`
+  returns, so a Little Snitch prompt on connection setup is outside the sender
+  wall-time calculation.
+- To remove the remaining first-write ambiguity, the harness was updated to
+  require a TCP preflight write/ack before live capture starts.
+- Future Experiment 013-style reports include `Network preflight` lines proving
+  that the timed sender window starts only after the network rule has been
+  exercised and acknowledged.
+- This is still clean-room work: no proprietary product binary, protocol, or
+  implementation was inspected.
+
 ## Next Experiment
 
-Run Experiment 013 over wired Ethernet:
+Focus the next test on sender-side live capture and encode pacing. Useful
+directions are capture-only FPS ladders, encoder-only FPS ladders from synthetic
+IOSurface-backed frames, and lower live H.264/HEVC shapes if a strict 60 Hz
+stream is required.
+
+Re-run Experiment 013 with the network preflight harness only if the Little
+Snitch timing boundary needs explicit fresh proof:
 
 ```sh
 ./test.sh receiver wired-ethernet-h264-3200

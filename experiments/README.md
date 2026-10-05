@@ -250,6 +250,17 @@ captures it live at 3200x1800, encodes H.264 3200x1800@60 with VideoToolbox, and
 streams that lower H.264 shape to the existing receiver path. Results are
 written under `013-live-h264-shape-tuning/results/<label>/`.
 
+The Experiment 013 harness now runs a TCP preflight handshake before live capture
+and before the timed sender window. If Little Snitch prompts for network
+permission, approve it during that preflight; the reported sender FPS starts only
+after the receiver has acknowledged the preflight packet.
+
+The first wired Ethernet run sent and rendered all 1700 frames with zero
+decode/render errors, but held only about 56.6 sender FPS / 57.0 receiver FPS.
+This confirms the iMac Pro can decode/render the received H.264 3200x1800 stream
+cleanly, while the sender-side live capture/encode pacing still misses a strict
+60 Hz target.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

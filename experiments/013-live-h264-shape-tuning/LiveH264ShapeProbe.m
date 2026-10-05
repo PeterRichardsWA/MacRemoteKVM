@@ -1021,8 +1021,18 @@ static int unusedLoopbackMain(int argc, const char *argv[]) {
 enum {
     MRKV011StreamMagic = 0x4d4b5331,
     MRKV011FrameMagic = 0x4d4b4631,
+    MRKV011PreflightMagic = 0x4d4b5031,
+    MRKV011PreflightAckMagic = 0x4d4b4131,
     MRKV011Version = 1
 };
+
+typedef struct __attribute__((packed)) {
+    uint32_t magic;
+    uint16_t version;
+    uint16_t headerBytes;
+    uint32_t flags;
+    uint32_t reserved;
+} MRKV011PreflightHeader;
 
 typedef struct __attribute__((packed)) {
     uint32_t magic;
@@ -1080,6 +1090,24 @@ static int32_t hostToBigS32(int32_t value) {
 
 static int32_t bigToHostS32(int32_t value) {
     return (int32_t)CFSwapInt32BigToHost((uint32_t)value);
+}
+
+static MRKV011PreflightHeader preflightHeaderToWire(MRKV011PreflightHeader header) {
+    header.magic = CFSwapInt32HostToBig(header.magic);
+    header.version = CFSwapInt16HostToBig(header.version);
+    header.headerBytes = CFSwapInt16HostToBig(header.headerBytes);
+    header.flags = CFSwapInt32HostToBig(header.flags);
+    header.reserved = CFSwapInt32HostToBig(header.reserved);
+    return header;
+}
+
+static MRKV011PreflightHeader preflightHeaderFromWire(MRKV011PreflightHeader header) {
+    header.magic = CFSwapInt32BigToHost(header.magic);
+    header.version = CFSwapInt16BigToHost(header.version);
+    header.headerBytes = CFSwapInt16BigToHost(header.headerBytes);
+    header.flags = CFSwapInt32BigToHost(header.flags);
+    header.reserved = CFSwapInt32BigToHost(header.reserved);
+    return header;
 }
 
 static MRKV011StreamHeader streamHeaderToWire(MRKV011StreamHeader header) {
@@ -1155,6 +1183,72 @@ static BOOL readBig32(int fd, uint32_t *value) {
         return NO;
     }
     *value = CFSwapInt32BigToHost(wire);
+    return YES;
+}
+
+static BOOL writePreflightHeader(int fd, uint32_t magic, NSString **errorOut) {
+    MRKV011PreflightHeader header;
+    memset(&header, 0, sizeof(header));
+    header.magic = magic;
+    header.version = MRKV011Version;
+    header.headerBytes = sizeof(header);
+
+    MRKV011PreflightHeader wireHeader = preflightHeaderToWire(header);
+    if (!writeFull(fd, &wireHeader, sizeof(wireHeader))) {
+        if (errorOut) {
+            *errorOut = [NSString stringWithFormat:@"could not write network preflight packet: errno %d", errno];
+        }
+        return NO;
+    }
+    return YES;
+}
+
+static BOOL readPreflightHeader(int fd, uint32_t expectedMagic, NSString **errorOut) {
+    MRKV011PreflightHeader wireHeader;
+    if (!readFull(fd, &wireHeader, sizeof(wireHeader))) {
+        if (errorOut) {
+            *errorOut = [NSString stringWithFormat:@"could not read network preflight packet: errno %d", errno];
+        }
+        return NO;
+    }
+
+    MRKV011PreflightHeader header = preflightHeaderFromWire(wireHeader);
+    if (header.magic != expectedMagic ||
+        header.version != MRKV011Version ||
+        header.headerBytes != sizeof(MRKV011PreflightHeader)) {
+        if (errorOut) {
+            *errorOut = @"invalid network preflight packet";
+        }
+        return NO;
+    }
+    return YES;
+}
+
+static BOOL performSenderPreflight(int fd, double *roundTripMSOut, NSString **errorOut) {
+    uint64_t start = nowNanos();
+    if (!writePreflightHeader(fd, MRKV011PreflightMagic, errorOut)) {
+        return NO;
+    }
+    if (!readPreflightHeader(fd, MRKV011PreflightAckMagic, errorOut)) {
+        return NO;
+    }
+    if (roundTripMSOut) {
+        *roundTripMSOut = nanosToMS(nowNanos() - start);
+    }
+    return YES;
+}
+
+static BOOL performReceiverPreflight(int fd, double *handlingMSOut, NSString **errorOut) {
+    uint64_t start = nowNanos();
+    if (!readPreflightHeader(fd, MRKV011PreflightMagic, errorOut)) {
+        return NO;
+    }
+    if (!writePreflightHeader(fd, MRKV011PreflightAckMagic, errorOut)) {
+        return NO;
+    }
+    if (handlingMSOut) {
+        *handlingMSOut = nanosToMS(nowNanos() - start);
+    }
     return YES;
 }
 
@@ -1559,6 +1653,8 @@ static NetworkStreamConfig *readStreamConfig(int fd, NSString **errorOut) {
 @property(nonatomic) unsigned long long bytesSent;
 @property(nonatomic) NSUInteger sourceLoopsCompleted;
 @property(nonatomic) NSTimeInterval senderWallSeconds;
+@property(nonatomic) BOOL preflightOK;
+@property(nonatomic) double preflightRoundTripMS;
 - (BOOL)run;
 - (void)writeReport;
 @end
@@ -1578,6 +1674,17 @@ static NetworkStreamConfig *readStreamConfig(int fd, NSString **errorOut) {
         [self writeReport];
         return NO;
     }
+
+    NSString *preflightError = nil;
+    double preflightRoundTripMS = 0.0;
+    if (!performSenderPreflight(fd, &preflightRoundTripMS, &preflightError)) {
+        self.failure = preflightError ?: @"network preflight failed";
+        close(fd);
+        [self writeReport];
+        return NO;
+    }
+    self.preflightOK = YES;
+    self.preflightRoundTripMS = preflightRoundTripMS;
 
     NSString *headerError = nil;
     if (!sendStreamHeader(fd, self.input, &headerError)) {
@@ -1671,6 +1778,8 @@ static NetworkStreamConfig *readStreamConfig(int fd, NSString **errorOut) {
     [report appendFormat:@"- Destination: %@:%u\n", self.host, self.port];
     [report appendFormat:@"- Requested duration: %.1f seconds\n", self.requestedDurationSeconds];
     [report appendFormat:@"- Realtime pacing: %@\n", yesNo(self.realtimePacing)];
+    [report appendFormat:@"- Network preflight: %@\n", self.preflightOK ? @"passed before timed sender window" : @"not completed"];
+    [report appendFormat:@"- Network preflight round trip: %.3f ms\n", self.preflightRoundTripMS];
     [report appendString:@"- Transport: TCP over configured network path\n"];
     [report appendString:@"- Header encoding: big-endian network headers\n"];
     [report appendString:@"- Decoder config: serialized H.264/HEVC parameter sets\n"];
@@ -1877,6 +1986,8 @@ static void liveCompressionOutputCallback(void *outputCallbackRefCon,
 @property(nonatomic) NSTimeInterval lastOutputWallTime;
 @property(nonatomic) NSTimeInterval senderWallSeconds;
 @property(nonatomic, strong) NSDate *startDate;
+@property(nonatomic) BOOL preflightOK;
+@property(nonatomic) double preflightRoundTripMS;
 - (BOOL)run;
 - (BOOL)createEncoder;
 - (void)handleCompressionOutputWithStatus:(OSStatus)status infoFlags:(VTEncodeInfoFlags)infoFlags sampleBuffer:(CMSampleBufferRef)sampleBuffer;
@@ -2300,6 +2411,23 @@ static void liveCompressionOutputCallback(void *outputCallbackRefCon,
         return NO;
     }
 
+    NSString *preflightError = nil;
+    double preflightRoundTripMS = 0.0;
+    if (!performSenderPreflight(_fd, &preflightRoundTripMS, &preflightError)) {
+        self.failure = preflightError ?: @"network preflight failed";
+        [probeView stopAnimating];
+        [window close];
+        VTCompressionSessionInvalidate(_compressionSession);
+        CFRelease(_compressionSession);
+        _compressionSession = NULL;
+        close(_fd);
+        _fd = -1;
+        [self writeReport];
+        return NO;
+    }
+    self.preflightOK = YES;
+    self.preflightRoundTripMS = preflightRoundTripMS;
+
     self.startDate = [NSDate date];
     dispatch_semaphore_t startSemaphore = dispatch_semaphore_create(0);
     __block NSError *startError = nil;
@@ -2383,6 +2511,8 @@ static void liveCompressionOutputCallback(void *outputCallbackRefCon,
     [report appendFormat:@"- Codec name: %@\n", self.codecDisplayName ?: @"unavailable"];
     [report appendFormat:@"- Target bitrate: %lu Mbps\n", (unsigned long)self.bitrateMbps];
     [report appendFormat:@"- Encoder setup: %@\n", self.encoderNote ?: @"unavailable"];
+    [report appendFormat:@"- Network preflight: %@\n", self.preflightOK ? @"passed before capture/timed sender window" : @"not completed"];
+    [report appendFormat:@"- Network preflight round trip: %.3f ms\n", self.preflightRoundTripMS];
     [report appendString:@"- Transport: TCP over configured network path\n"];
     [report appendString:@"- Header encoding: big-endian network headers\n"];
     [report appendString:@"- Decoder config: serialized H.264/HEVC parameter sets from live encoder output\n"];
@@ -2504,6 +2634,8 @@ static void networkOutputCallback(void *decompressionOutputRefCon,
 @property(nonatomic) double interarrivalMinMS;
 @property(nonatomic) double interarrivalMaxMS;
 @property(nonatomic) uint64_t lastReceiveNanos;
+@property(nonatomic) BOOL preflightOK;
+@property(nonatomic) double preflightHandlingMS;
 @property(nonatomic, strong) dispatch_semaphore_t inflightSemaphore;
 @property(nonatomic, strong) NSMutableArray<NSString *> *decodeCallErrorLines;
 @property(nonatomic, strong) NSMutableArray<NSString *> *decodeOutputErrorLines;
@@ -2615,6 +2747,17 @@ static void networkOutputCallback(void *decompressionOutputRefCon,
 }
 
 - (BOOL)runWithSocket:(int)fd {
+    NSString *preflightError = nil;
+    double preflightHandlingMS = 0.0;
+    if (!performReceiverPreflight(fd, &preflightHandlingMS, &preflightError)) {
+        self.failure = preflightError ?: @"network preflight failed";
+        [self writeReport];
+        close(fd);
+        return NO;
+    }
+    self.preflightOK = YES;
+    self.preflightHandlingMS = preflightHandlingMS;
+
     NSString *configError = nil;
     self.config = readStreamConfig(fd, &configError);
     if (!self.config) {
@@ -2838,6 +2981,10 @@ static void networkOutputCallback(void *decompressionOutputRefCon,
     if (self.failure) {
         [report appendFormat:@"- Failure: %@\n", self.failure];
     }
+
+    [report appendString:@"\n## Network Preflight\n\n"];
+    [report appendFormat:@"- Preflight handshake: %@\n", self.preflightOK ? @"passed before stream config and receiver timing" : @"not completed"];
+    [report appendFormat:@"- Preflight handling time: %.3f ms\n", self.preflightHandlingMS];
 
     [report appendString:@"\n## Render Target\n\n"];
     [report appendString:@"- Renderer: Metal CAMetalLayer with Core Image CVPixelBuffer render\n"];

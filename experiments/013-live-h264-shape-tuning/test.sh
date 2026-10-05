@@ -103,6 +103,10 @@ This sender creates a software 5K virtual display, captures it with
 ScreenCaptureKit, encodes H.264 3200x1800@60 live with VideoToolbox, and
 streams the encoded frames to the receiver.
 
+The sender runs a TCP preflight handshake before the live capture/timed sender
+window. If Little Snitch prompts, approve the connection during preflight; the
+reported sender FPS starts only after the receiver acknowledges that packet.
+
 Environment:
   MACRKVM_PORT=${PORT}
   MACRKVM_TRANSPORT_SECONDS=${TRANSPORT_SECONDS}

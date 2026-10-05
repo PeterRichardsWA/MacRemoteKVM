@@ -31,6 +31,11 @@ Results are written under:
 experiments/013-live-h264-shape-tuning/results/wired-ethernet-h264-3200/
 ```
 
+The sender and receiver perform a small TCP preflight handshake before the live
+capture clock starts. If Little Snitch or macOS asks for network permission,
+grant it during that preflight; the timed sender window begins only after the
+receiver has acknowledged the preflight packet.
+
 ## Local Smoke
 
 A 2-second local loopback smoke run passed functionally:
@@ -39,4 +44,19 @@ A 2-second local loopback smoke run passed functionally:
 - Receiver: 113 frames received, 113 frames rendered, 60.76 rendered FPS, zero
   decode errors, zero render failures.
 
-The decisive result still needs the 30-second two-Mac wired Ethernet run.
+The local smoke run only validated integration; the two-Mac wired Ethernet
+result below is the decisive result for this stream shape.
+
+## Wired Ethernet Result
+
+The first two-Mac wired Ethernet run completed cleanly but did not clear the
+strict 60 Hz sender pacing bar:
+
+- Sender: 1700 frames sent, 56.62 FPS, zero encode/write errors.
+- Receiver: 1700 frames received, 1700 frames rendered, 56.98 rendered FPS,
+  zero decode errors, zero render failures.
+- Receiver render cost was low: 2.480 ms average synchronous render time.
+
+Interpretation: this is a sender-side live capture/encode pacing miss, not an
+iMac Pro receiver decode/render failure. The receiver rendered every frame it
+received.

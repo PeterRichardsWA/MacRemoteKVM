@@ -275,6 +275,19 @@ encode-only ladder measures VideoToolbox H.264/HEVC pacing from preallocated
 IOSurface-backed synthetic buffers. Results are written under
 `014-sender-pacing-split/results/<label>/`.
 
+The 30-second `sender-pacing-30s` run found:
+
+- Capture-only 3200x1800@60: 55.66 FPS.
+- Capture-only 3840x2160@60: 57.23 FPS.
+- Capture-only 5120x2880@60: 57.56 FPS.
+- Encode-only H.264 3200x1800@60: 59.99 FPS.
+- Encode-only H.264 3840x2160@60: 48.67 FPS.
+- Encode-only HEVC 3200x1800@60: 59.99 FPS.
+
+Interpretation: the current live 3200x1800 sender ceiling is capture pacing, not
+VideoToolbox encode. H.264 3840x2160@60 is also encode-limited and should not be
+the first live stream candidate.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

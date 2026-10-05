@@ -1237,6 +1237,34 @@ already suggest H.264 3200x1800 and HEVC 3200x1800 encode-only can hold a paced
 not. The decisive run should use the default 10-second cases or a 30-second
 labelled run on the sender Mac.
 
+Thirty-second sender pacing result:
+
+```text
+Run label: sender-pacing-30s
+Sender Mac: MacBookPro18,2, macOS 26.6.2
+
+Capture-only:
+  3200x1800: 1670 complete frames, 55.66 FPS by window, 55.66 FPS first/last
+  3840x2160: 1717 complete frames, 57.23 FPS by window, 57.23 FPS first/last
+  5120x2880: 1727 complete frames, 57.56 FPS by window, 57.57 FPS first/last
+
+Encode-only:
+  H.264 3200x1800: 1800 submitted, 1800 callbacks, 59.99 output FPS total
+  H.264 3840x2160: 1465 submitted, 1465 callbacks, 48.67 output FPS total
+  HEVC 3200x1800: 1800 submitted, 1800 callbacks, 59.99 output FPS total
+```
+
+Conclusion: For the current 3200x1800 live stream shape, VideoToolbox encode is
+not the bottleneck. H.264 3200x1800 and HEVC 3200x1800 encode-only both held a
+paced 60 Hz synthetic source. ScreenCaptureKit capture-only did not hold strict
+60 Hz, and the 3200x1800 capture-only result is close to the Experiment 013 live
+sender capture rate. The current live 3200x1800 sender ceiling is therefore most
+likely capture pacing.
+
+Secondary conclusion: H.264 3840x2160@60 is encode-limited on the sender Mac in
+this configuration. It should not be the first live stream candidate unless the
+encoder settings, codec choice, or stream shape changes substantially.
+
 Run command:
 
 ```sh

@@ -398,6 +398,12 @@ ladders. It does not use the receiver and it does not open a network
 connection. Results are written under
 `experiments/014-sender-pacing-split/results/<label>/`.
 
+The 30-second sender pacing split showed that H.264 3200x1800 and HEVC
+3200x1800 encode-only both hold paced 60 Hz, while ScreenCaptureKit capture-only
+does not hold strict 60 Hz. That points the current 3200x1800 live sender
+ceiling at capture pacing rather than VideoToolbox encode, network transport, or
+the iMac Pro receiver.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working

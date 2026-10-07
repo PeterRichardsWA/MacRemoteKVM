@@ -1472,3 +1472,86 @@ Artifacts:
 - `experiments/016-capture-tuning/test.sh`
 - `experiments/016-capture-tuning/README.md`
 - `experiments/016-capture-tuning/results/`
+
+## Experiment 017: Live HEVC With Native Capture Interval
+
+Date: 2026-10-07
+
+Question: Does Experiment 016's improved capture pacing survive the full live
+capture, HEVC encode, Thunderbolt transport, hardware decode, and render path?
+
+Implementation and sources:
+
+- Adapted our Experiment 013 live transport and Experiment 006 Metal renderer;
+  all required source is now in `LiveNativeIntervalProbe.m` in this directory.
+- Applied Experiment 016's best capture setting: `kCMTimeZero` minimum frame
+  interval, Best resolution, BGRA pixel format, and queue depth 8.
+- Creates a 5120x2880 software virtual display at 60 Hz, captures/encodes at
+  3200x1800, and sends HEVC/H.265 Main at a target 24 Mbps.
+- Reuses our own big-endian TCP protocol and parameter-set serialization. A
+  preflight write/ack happens before capture and sender measurement, excluding
+  Little Snitch permission delay.
+- Uses existing Apple platform API declarations and our own experiment evidence.
+  No new external product references, code, binaries, or protocols were inspected.
+- Includes `test.sh`, full source, and a signed universal x86_64/arm64 executable
+  targeting macOS 15.0. No media fixtures or sibling experiment files are needed.
+- Both modes default to the same `thunderbolt-native-hevc-3200` result label.
+  Reports are written inside this experiment's `results/` directory.
+
+Setup findings and corrections:
+
+- The sandbox could not create a Metal presenter. The functional smoke was run
+  in the normal macOS session with GPU/window-server and loopback access.
+- Initial 5-second smoke: sender exited with SIGTRAP before the stream header.
+  Our process's OS crash report showed a dictionary construction exception in
+  the animated source's font attributes. Added font fallback and nil checks.
+  Receiver failure reports are kept under `results/local-smoke-startup-failure/`.
+- The next 5-second smoke rendered all 303 frames with zero errors. Its sender
+  FPS exposed an inherited timing boundary problem: initial capture callbacks
+  could be counted before the sender clock started. Preserved those reports
+  under `results/local-smoke-timing-review/`.
+- Corrected sender timing to begin before `startCapture`, after network preflight,
+  and end after encoder drain. Also drains the capture callback queue before
+  encoder flush and checks for capture errors, changed dimensions, and dropped
+  frames. The 95% pass band is explicitly distinguished from sustained 60 FPS.
+
+Final local verification:
+
+```text
+Machine: MacBookPro18,2, Apple M1 Max, macOS 26.6.2
+Path: TCP loopback, 10-second request, windowed receiver (2560x1440 drawable)
+
+Complete capture input: 587 frames, 58.38 FPS first-to-last
+Encode/send: 587 frames, 57.83 FPS over 10.151 seconds including startup/drain
+Receive/render: 587 frames, 59.32 FPS over 9.895 seconds
+All byte counts match; zero encode/decode/render errors or dropped-frame flags
+Hardware HEVC decoder created successfully
+Sender network preflight: 0.175 ms, excluded from sender timing
+
+Universal build, macOS deployment target, code signature, shell syntax,
+usage, missing-host handling, and positive-duration validation checked
+```
+
+Conclusion: The final local smoke validates the live pipeline and its packaged
+harness. It does not establish Thunderbolt or Intel receiver performance. The
+decisive two-Mac 30-second run is pending. Receiver and sender FPS have different
+measurement boundaries; compare matching frame counts and source pacing as well
+as throughput. GPU render completion does not independently measure physical
+display refreshes.
+
+Run commands, receiver first and then sender:
+
+```sh
+cd /Users/peterrichards/dev/MacRemoteKVM/experiments/017-live-native-interval-transport
+./test.sh receiver
+./test.sh sender <receiver-thunderbolt-ip>
+```
+
+Artifacts:
+
+- `experiments/017-live-native-interval-transport/LiveNativeIntervalProbe.m`
+- `experiments/017-live-native-interval-transport/LiveNativeIntervalProbe`
+- `experiments/017-live-native-interval-transport/LiveNativeIntervalProbe.source.sha256`
+- `experiments/017-live-native-interval-transport/test.sh`
+- `experiments/017-live-native-interval-transport/README.md`
+- `experiments/017-live-native-interval-transport/results/`

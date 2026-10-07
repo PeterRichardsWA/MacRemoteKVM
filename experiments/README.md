@@ -349,6 +349,28 @@ The 30-second `capture-tuning-30s` run found:
 Interpretation: native display frame interval is the best capture setting tested
 so far, but it still falls short of strict 60 Hz over 30 seconds.
 
+Run live HEVC with native capture interval over Thunderbolt:
+
+```sh
+cd 017-live-native-interval-transport
+./test.sh receiver
+```
+
+Then on the sender:
+
+```sh
+cd 017-live-native-interval-transport
+./test.sh sender <receiver-thunderbolt-ip>
+```
+
+Experiment 017 tests a single 30-second HEVC 3200x1800 live stream using the
+native capture interval from Experiment 016. The directory is self-contained,
+with source and a universal executable. Network preflight excludes permission
+prompts from sender timing. Both modes default to the same result label under
+`017-live-native-interval-transport/results/thunderbolt-native-hevc-3200/`.
+Local smoke passed with all 587 captured frames rendered and zero errors; actual
+Thunderbolt and iMac Pro performance remain to be measured.
+
 Notes:
 
 - This is not App Store-safe; it intentionally exercises private API.

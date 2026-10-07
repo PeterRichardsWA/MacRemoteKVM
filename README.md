@@ -450,6 +450,31 @@ interval (`kCMTimeZero`): `58.69 FPS`, up from the baseline `57.42 FPS`. That is
 a real improvement, but still not a strict 60 Hz capture path. Queue depth `1`
 produced no complete frames and should be avoided.
 
+Live HEVC with native capture interval over Thunderbolt:
+
+On the iMac Pro receiver first:
+
+```sh
+cd experiments/017-live-native-interval-transport
+./test.sh receiver
+```
+
+On the sender Mac:
+
+```sh
+cd experiments/017-live-native-interval-transport
+./test.sh sender <receiver-thunderbolt-ip>
+```
+
+Experiment 017 combines native ScreenCaptureKit frame interval with HEVC
+3200x1800 and the hardware decode/render path. It measures one 30-second live
+stream and includes a network preflight for Little Snitch. Source and a universal
+Intel/Apple Silicon executable are included in the experiment directory. Both
+commands default to results under
+`experiments/017-live-native-interval-transport/results/thunderbolt-native-hevc-3200/`.
+The local 10-second smoke run rendered all 587 frames with zero errors; the
+two-Mac Thunderbolt result is pending.
+
 ## Distribution Assumption
 
 These probes use private CoreGraphics virtual-display APIs. The working
